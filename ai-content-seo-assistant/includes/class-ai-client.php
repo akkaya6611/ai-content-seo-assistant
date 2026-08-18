@@ -121,7 +121,7 @@ class AI_SEO_Client {
     }
 
     /**
-     * OpenAI API çağrısı
+     * OpenAI API çağrısı (GPT-4o, GPT-4o-mini, o1, o3-mini)
      */
     private function call_openai($prompt, $system_prompt, $model, $key, $temperature, $max_tokens) {
         $api_key = $key ?: trim($this->options['openai_key'] ?? '');
@@ -131,17 +131,34 @@ class AI_SEO_Client {
 
         $model = $model ?: ($this->options['openai_model'] ?? 'gpt-4o-mini');
         $messages = array();
-        if (!empty($system_prompt)) {
-            $messages[] = array('role' => 'system', 'content' => $system_prompt);
-        }
-        $messages[] = array('role' => 'user', 'content' => $prompt);
 
-        $body = array(
-            'model'       => $model,
-            'messages'    => $messages,
-            'temperature' => $temperature,
-            'max_tokens'  => $max_tokens,
-        );
+        // o1 ve o3-mini muhakeme modelleri özel parametreler gerektirir (developer rolü ve max_completion_tokens)
+        $is_reasoning = (strpos($model, 'o1') === 0 || strpos($model, 'o3') === 0);
+
+        if ($is_reasoning) {
+            if (!empty($system_prompt)) {
+                $messages[] = array('role' => 'developer', 'content' => $system_prompt);
+            }
+            $messages[] = array('role' => 'user', 'content' => $prompt);
+
+            $body = array(
+                'model'                 => $model,
+                'messages'              => $messages,
+                'max_completion_tokens' => $max_tokens,
+            );
+        } else {
+            if (!empty($system_prompt)) {
+                $messages[] = array('role' => 'system', 'content' => $system_prompt);
+            }
+            $messages[] = array('role' => 'user', 'content' => $prompt);
+
+            $body = array(
+                'model'       => $model,
+                'messages'    => $messages,
+                'temperature' => $temperature,
+                'max_tokens'  => $max_tokens,
+            );
+        }
 
         return $this->post_json('https://api.openai.com/v1/chat/completions', array(
             'Authorization' => 'Bearer ' . $api_key,
@@ -183,7 +200,7 @@ class AI_SEO_Client {
     }
 
     /**
-     * Google Gemini API çağrısı (Gemini 2.5 Flash / 1.5 Flash)
+     * Google Gemini API çağrısı (Gemini 2.5 Flash / 2.0 Flash / 1.5 Flash)
      */
     private function call_gemini($prompt, $system_prompt, $model, $key, $temperature, $max_tokens) {
         $api_key = $key ?: trim($this->options['gemini_key'] ?? '');
@@ -191,7 +208,7 @@ class AI_SEO_Client {
             return array('success' => false, 'error' => __('Google Gemini API anahtarı girilmemiş. Lütfen eklenti ayarlarını kontrol edin.', 'ai-content-seo-assistant'));
         }
 
-        $model = $model ?: ($this->options['gemini_model'] ?? 'gemini-1.5-flash');
+        $model = $model ?: ($this->options['gemini_model'] ?? 'gemini-2.5-flash');
         $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . urlencode($model) . ':generateContent?key=' . urlencode($api_key);
 
         $body = array(
@@ -228,9 +245,14 @@ class AI_SEO_Client {
 
         // Eğer 404 (model bulunamadı) dönerse, kararlı gemini-1.5-flash veya gemini-2.0-flash ile otomatik tekrar dene
         if (!$res['success'] && (strpos($res['error'], '404') !== false || strpos($res['error'], 'not found') !== false || strpos($res['error'], 'no longer available') !== false)) {
-            if ($model !== 'gemini-1.5-flash') {
-                $fallback_url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . urlencode($api_key);
+            $fallbacks = array('gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash');
+            foreach ($fallbacks as $fb) {
+                if ($fb === $model) continue;
+                $fallback_url = 'https://generativelanguage.googleapis.com/v1beta/models/' . urlencode($fb) . ':generateContent?key=' . urlencode($api_key);
                 $res = $this->post_json($fallback_url, array(), $body, $gemini_extractor);
+                if ($res['success']) {
+                    break;
+                }
             }
         }
 
@@ -263,7 +285,13 @@ class AI_SEO_Client {
         return $this->post_json('https://api.deepseek.com/chat/completions', array(
             'Authorization' => 'Bearer ' . $api_key,
         ), $body, function($json) {
-            return $json['choices'][0]['message']['content'] ?? '';
+            if (!empty($json['choices'][0]['message']['content'])) {
+                return $json['choices'][0]['message']['content'];
+            }
+            if (!empty($json['choices'][0]['message']['reasoning_content'])) {
+                return $json['choices'][0]['message']['reasoning_content'];
+            }
+            return '';
         });
     }
 
