@@ -123,7 +123,7 @@ class AI_SEO_Editor_Metabox {
                                 <label for="ai_gen_provider"><?php esc_html_e('Kullanılacak Yapay Zeka Modeli:', 'ai-content-seo-assistant'); ?></label>
                                 <select id="ai_gen_provider" class="ai-input">
                                     <option value="groq" <?php selected($default_provider, 'groq'); ?>>Groq (Llama 3.3 70B & DeepSeek R1 - Ultra Hızlı)</option>
-                                    <option value="gemini" <?php selected($default_provider, 'gemini'); ?>>Google Gemini (gemini-2.5-flash - Çok Hızlı & Ücretsiz Kotası Yüksek)</option>
+                                    <option value="gemini" <?php selected($default_provider, 'gemini'); ?>>Google Gemini (gemini-3.6-flash / 3.1-pro - Hızlı & Güçlü)</option>
                                     <option value="deepseek" <?php selected($default_provider, 'deepseek'); ?>>DeepSeek (deepseek-chat V3 - Ekonomik & Zeki)</option>
                                     <option value="openrouter" <?php selected($default_provider, 'openrouter'); ?>>OpenRouter (Gemini 2.0 / Llama 3.3 / Qwen)</option>
                                     <option value="anthropic" <?php selected($default_provider, 'anthropic'); ?>>Anthropic Claude (3.7 Sonnet / 3.5 Haiku)</option>
