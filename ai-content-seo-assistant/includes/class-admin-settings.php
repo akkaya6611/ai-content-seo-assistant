@@ -197,6 +197,23 @@ class AI_SEO_Admin_Settings {
 
             <?php settings_errors(); ?>
 
+            <?php
+            $lic_is_active = class_exists('AI_SEO_License_Manager') ? AI_SEO_License_Manager::is_licensed() : false;
+            if (!$lic_is_active && $active_tab !== 'license'):
+            ?>
+                <div class="notice notice-warning is-dismissible" style="padding:12px 18px; border-left-color:#ef4444; background:#fff5f5; border-radius:4px; margin:15px 0;">
+                    <p style="font-size:14px; margin:0; display:flex; align-items:center; justify-content:space-between;">
+                        <span>
+                            <strong style="color:#dc2626;">🔒 <?php esc_html_e('Eklenti Lisansı Etkin Değil:', 'ai-content-seo-assistant'); ?></strong>
+                            <?php esc_html_e('Yapay zeka ile içerik üretimi, SEO optimizasyonu ve Otomatik Pilot (Cron) özelliklerini kullanabilmek için lütfen geçerli lisans anahtarınızı etkinleştirin.', 'ai-content-seo-assistant'); ?>
+                        </span>
+                        <a href="<?php echo admin_url('admin.php?page=ai-content-seo-assistant-license'); ?>" class="button button-primary" style="background:#dc2626; border-color:#b91c1c; font-weight:600; margin-left:15px; white-space:nowrap;">
+                            🔑 <?php esc_html_e('Lisansı Etkinleştir', 'ai-content-seo-assistant'); ?>
+                        </a>
+                    </p>
+                </div>
+            <?php endif; ?>
+
             <nav class="nav-tab-wrapper ai-seo-nav-tabs">
                 <a href="#tab-providers" class="nav-tab <?php echo ($active_tab === 'providers') ? 'nav-tab-active' : ''; ?>" data-tab="providers">
                     <span class="dashicons dashicons-cloud"></span> <?php esc_html_e('AI Sağlayıcıları & Anahtarlar', 'ai-content-seo-assistant'); ?>
