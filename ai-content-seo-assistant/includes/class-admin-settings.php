@@ -22,14 +22,52 @@ class AI_SEO_Admin_Settings {
     }
 
     /**
-     * Yönetici Menüsüne Ekle
+     * Ana Yönetici Menüsüne Ekle (Özel Sol Menü)
      */
     public function add_plugin_admin_menu() {
-        add_options_page(
-            __('AI İçerik & SEO Asistanı Ayarları', 'ai-content-seo-assistant'),
+        add_menu_page(
+            __('AI İçerik & SEO Asistanı', 'ai-content-seo-assistant'),
             __('AI SEO Asistanı', 'ai-content-seo-assistant'),
             'manage_options',
             'ai-content-seo-assistant',
+            array($this, 'render_settings_page'),
+            'dashicons-superhero',
+            28
+        );
+
+        add_submenu_page(
+            'ai-content-seo-assistant',
+            __('AI Modelleri & Genel Ayarlar', 'ai-content-seo-assistant'),
+            __('AI Modelleri & Ayarlar', 'ai-content-seo-assistant'),
+            'manage_options',
+            'ai-content-seo-assistant',
+            array($this, 'render_settings_page')
+        );
+
+        add_submenu_page(
+            'ai-content-seo-assistant',
+            __('⚡ Otomatik Pilot (Cron)', 'ai-content-seo-assistant'),
+            __('⚡ Otomatik Pilot', 'ai-content-seo-assistant'),
+            'manage_options',
+            'admin.php?page=ai-content-seo-assistant#tab-autopilot',
+            array($this, 'render_settings_page')
+        );
+
+        add_submenu_page(
+            'ai-content-seo-assistant',
+            __('🔑 Lisans & Aktivasyon', 'ai-content-seo-assistant'),
+            __('🔑 Lisans & Aktivasyon', 'ai-content-seo-assistant'),
+            'manage_options',
+            'admin.php?page=ai-content-seo-assistant#tab-license',
+            array($this, 'render_settings_page')
+        );
+
+        add_submenu_page(
+            'ai-content-seo-assistant',
+            __('🔄 Otomatik Güncellemeler', 'ai-content-seo-assistant'),
+            __('🔄 Güncellemeler', 'ai-content-seo-assistant'),
+            'manage_options',
+            'admin.php?page=ai-content-seo-assistant#tab-updates',
             array($this, 'render_settings_page')
         );
     }
