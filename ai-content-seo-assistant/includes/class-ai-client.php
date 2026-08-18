@@ -98,9 +98,9 @@ class AI_SEO_Client {
             return $json['choices'][0]['message']['content'] ?? '';
         });
 
-        // Eğer seçilen model Groq'ta 404 dönerse, sırasıyla alternatif modeller ile otomatik tekrar dene
-        if (!$res['success'] && (strpos($res['error'], '404') !== false || strpos($res['error'], 'does not exist') !== false || strpos($res['error'], 'not found') !== false)) {
-            $fallbacks = array('llama-3.3-70b-versatile', 'llama3-70b-8192', 'llama3-8b-8192');
+        // Eğer seçilen model Groq'ta 400 (decommissioned/deprecated) veya 404 (bulunamadı) dönerse, aktif modeller ile otomatik tekrar dene
+        if (!$res['success'] && (strpos($res['error'], '400') !== false || strpos($res['error'], '404') !== false || strpos($res['error'], 'decommissioned') !== false || strpos($res['error'], 'deprecated') !== false || strpos($res['error'], 'does not exist') !== false || strpos($res['error'], 'not found') !== false)) {
+            $fallbacks = array('llama-3.3-70b-versatile', 'deepseek-r1-distill-llama-70b', 'gemma2-9b-it', 'mixtral-8x7b-32768');
             foreach ($fallbacks as $fb_model) {
                 if ($fb_model === $model) {
                     continue;
