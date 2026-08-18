@@ -222,7 +222,6 @@ class AI_SEO_Ajax_Handler {
             wp_send_json_error(array('message' => sanitize_text_field($response['error'])));
         }
     }
-    }
 
     /**
      * Ayarlar Sayfası: API Bağlantısını Test Etme
