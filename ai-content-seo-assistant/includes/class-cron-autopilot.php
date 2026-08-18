@@ -244,15 +244,19 @@ class AI_SEO_Cron_Autopilot {
     private function clean_title_text($raw) {
         $t = trim(wp_strip_all_tags($raw), "\"'\n\r#* ");
 
-        // Düşünce süreci veya analyze input sızıntısını temizle
-        if (preg_match('/thinking\s+process|analyze\s+user\s+input/iu', $t)) {
+        // Düşünce süreci veya analyze input / constraint sızıntısını temizle
+        if (preg_match('/(?:here[\'’]?s\s+a\s+|s\s+a\s+|\*?\*?)thinking\s+process|analyze\s+user\s+input|constraint\s+\d/iu', $t)) {
+            // Önce tırnak içindeki konuyu yakalamayı dene: ‘...’ veya "..."
             if (preg_match('/[‘\'"]([^‘\'"]{10,})[’\'"]/u', $t, $m)) {
                 $t = $m[1];
+            } elseif (preg_match('/topic:?\s*[‘\'"*]*([^‘\'"*\r\n]{8,})/iu', $t, $mTopic)) {
+                $t = $mTopic[1];
             } else {
-                $lines = preg_split('/\r\n|\n/', $t);
+                $lines = preg_split('/\r?\n/', $t);
                 foreach ($lines as $l) {
-                    if (!preg_match('/thinking\s+process|analyze/iu', $l) && mb_strlen(trim($l), 'UTF-8') >= 8) {
-                        $t = trim($l);
+                    $tl = trim($l);
+                    if (!preg_match('/thinking\s+process|analyze|constraint|role:|goal:/iu', $tl) && mb_strlen($tl, 'UTF-8') >= 8) {
+                        $t = $tl;
                         break;
                     }
                 }
@@ -263,7 +267,7 @@ class AI_SEO_Cron_Autopilot {
         $t = preg_replace('/\([A-Za-z\s,:\'’\-\.\?]{8,}\)/u', '', $t);
 
         // Prefixleri kaldır
-        $t = preg_replace('/^(başlık|seo başlığı|title|öneri|konu)\s*:\s*/iu', '', $t);
+        $t = preg_replace('/^(?:başlık|seo başlığı|title|öneri|konu|topic)\s*:\s*/iu', '', $t);
         $t = preg_replace('/^(\d+[\.\-\)]\s*)/u', '', $t);
         $t = preg_replace('/^[-–—]\s*/u', '', $t);
 
