@@ -240,21 +240,21 @@ class AI_SEO_Ajax_Handler {
         $res = $client->generate("Say 'API connected successfully.' in 4 words.", "Answer concisely.", $test_opts);
         $duration = round((microtime(true) - $start_time) * 1000);
 
-        if ($res['success']) {
-            // Test başarılıysa opsiyonel olarak key'i kalıcı da kaydedebiliriz
-            if (!empty($key)) {
-                $saved_opts[$provider . '_key'] = $key;
-                if (!empty($model)) {
-                    $saved_opts[$provider . '_model'] = $model;
-                }
-                if ($provider === 'custom') {
-                    $saved_opts['custom_base_url'] = $base_url;
-                    $saved_opts['custom_key'] = $key;
-                    $saved_opts['custom_model'] = $model;
-                }
-                update_option('ai_seo_assistant_options', $saved_opts);
+        // Kullanıcının girdiği API anahtarı ve modeli hemen veritabanına kalıcı kaydet (asla kaybolmasın)
+        if (!empty($key)) {
+            $saved_opts[$provider . '_key'] = $key;
+            if (!empty($model)) {
+                $saved_opts[$provider . '_model'] = $model;
             }
+            if ($provider === 'custom') {
+                $saved_opts['custom_base_url'] = $base_url;
+                $saved_opts['custom_key'] = $key;
+                $saved_opts['custom_model'] = $model;
+            }
+            update_option('ai_seo_assistant_options', $saved_opts);
+        }
 
+        if ($res['success']) {
             wp_send_json_success(array(
                 'message' => sprintf(__('✓ Başarılı! Bağlantı kuruldu (%d ms). Yanıt: "%s"', 'ai-content-seo-assistant'), $duration, esc_html($res['content'])),
             ));
