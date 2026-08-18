@@ -280,6 +280,9 @@ class AI_SEO_Client {
             'generationConfig' => array(
                 'temperature'     => $temperature,
                 'maxOutputTokens' => $max_tokens,
+                'thinkingConfig'  => array(
+                    'thinkingBudget' => 0,
+                ),
             )
         );
 
@@ -293,6 +296,9 @@ class AI_SEO_Client {
             if (!empty($json['candidates'][0]['content']['parts'])) {
                 $text = '';
                 foreach ($json['candidates'][0]['content']['parts'] as $part) {
+                    if (!empty($part['thought'])) {
+                        continue;
+                    }
                     $text .= $part['text'] ?? '';
                 }
                 return $text;
@@ -607,27 +613,43 @@ class AI_SEO_Client {
         // 1. <think>...</think> etiketlerini ve içeriğini kaldır (DeepSeek R1 vb.)
         $t = preg_replace('/<think>[\s\S]*?<\/think>/i', '', $t);
 
-        // 2. "Here's a thinking process: ... " veya "Thinking process: ..." bloklarını kaldır
-        $t = preg_replace('/^(here[\'’]s\s+(a\s+)?thinking\s+process[\s\S]*?(?:\n\n|\r\n\r\n|(?=<h[1-6]|<p)))/iu', '', $t);
-        $t = preg_replace('/^(\*?\*?thinking\s+process:?\*?\*?[\s\S]*?(?:\n\n|\r\n\r\n|(?=<h[1-6]|<p)))/iu', '', $t);
-
-        if (preg_match('/^here[\'’]s\s+(a\s+)?thinking\s+process/iu', $t)) {
-            $parts = preg_split('/\n\s*\n/', $t, 2);
-            if (count($parts) > 1) {
-                $t = $parts[1];
+        // 2. Düşünce süreci sızıntılarını (Thinking process, analyze input, constraint vb.) satır satır filtrele
+        if (preg_match('/(?:here[\'’]?s\s+a\s+|s\s+a\s+|\*?\*?)thinking\s+process|analyze\s+user\s+input|constraint\s+\d/iu', $t)) {
+            $lines = preg_split('/\r?\n/', $t);
+            $clean_lines = array();
+            foreach ($lines as $line) {
+                $trimmed_line = trim($line);
+                if (empty($trimmed_line)) continue;
+                if (!preg_match('/thinking\s+process|analyze\s+user\s+input|constraint\s+\d|user\s+input|role:\s*seo|goal:\s*create/iu', $trimmed_line)) {
+                    $clean_lines[] = $line;
+                }
+            }
+            if (!empty($clean_lines)) {
+                $t = implode("\n\n", $clean_lines);
+            } else {
+                if (preg_match('/topic:?\s*[‘\'"*]*([^‘\'"*\r\n]{8,})/iu', $t, $mTopic)) {
+                    $t = $mTopic[1];
+                }
             }
         }
 
-        // 3. Markdown kod blokları başlıklarını temizle (```html ... ```)
+        // 3. Başta kalan düşünce bloğu artıkları varsa kes
+        $t = preg_replace('/^(?:here[\'’]?s\s+a\s+|s\s+a\s+|\*?\*?)thinking\s+process[\s\S]*?(?:\n\n|\r\n\r\n|(?=<h[1-6]|<p|[A-ZÇĞİÖŞÜ]))/iu', '', $t);
+
+        // 4. Markdown kod blokları başlıklarını temizle (```html ... ```)
         $t = preg_replace('/^```(?:html)?\s*/i', '', $t);
         $t = preg_replace('/\s*```$/', '', $t);
 
-        // 4. Sohbet & Giriş Dolgularını temizle (Tabii ki, İşte hazırladığım, Sure, Here is...)
+        // 5. Sohbet & Giriş Dolgularını temizle (Tabii ki, İşte hazırladığım, Sure, Here is...)
         $t = preg_replace('/^(tabii ki|elbette|işte|işte hazırladığım|sure|here is|certainly)[^\n\r<]*?:\s*(\r\n|\n)?/iu', '', $t);
 
-        // 5. Parantez içindeki gereksiz İngilizce çevirileri temizle: (Style and Functionality in Small Apartments: Best Furniture...)
-        $t = preg_replace('/\([A-Za-z\s,:\'’\-\.\?]{10,}\)/u', '', $t);
+        // 6. Parantez içindeki gereksiz İngilizce çevirileri temizle: (Style and Functionality in Small Apartments: Best Furniture...)
+        $t = preg_replace('/\([A-Za-z\s,:\'’\-\.\?]{8,}\)/u', '', $t);
 
-        return trim($t);
+        // 7. Başlık ön eklerini ve tırnakları temizle
+        $t = preg_replace('/^(?:başlık|seo başlığı|title|öneri|konu|topic)\s*:\s*/iu', '', $t);
+        $t = preg_replace('/^[-–—]\s*/u', '', $t);
+
+        return trim($t, "\"'\n\r#* ");
     }
 }
