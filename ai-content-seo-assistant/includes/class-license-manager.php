@@ -153,36 +153,65 @@ class AI_SEO_License_Manager {
     private static function verify_key_algorithm($key, $domain) {
         $clean = strtoupper(trim($key));
 
-        // Format Kontrolü: MIS ile başlamalı
-        if (!preg_match('/^MIS-([A-Z0-9]{4})-([A-Z0-9]{4})-([A-Z0-9]{4})$/', $clean, $matches) &&
-            !preg_match('/^MIS-PRO-([A-Z0-9]{4})-([A-Z0-9]{4})$/', $clean, $matches)) {
-            return array('valid' => false);
+        // Format Kontrolü: MIS-PRO-XXXX-YYYY
+        if (preg_match('/^MIS-PRO-([A-Z0-9]{4})-([A-Z0-9]{4})$/i', $clean, $matches)) {
+            $randStr = strtoupper($matches[1]);
+            $checksum = strtoupper($matches[2]);
+            $expected_hash = strtoupper(substr(hash_hmac('sha256', $randStr . self::SECRET_SALT, self::SECRET_SALT), 0, 4));
+
+            if ($checksum === $expected_hash) {
+                return array('valid' => true, 'type' => 'PRO Lifetime');
+            }
         }
 
-        // Checksum Doğrulama
-        $parts = explode('-', $clean);
-        $payload = $parts[1] ?? '';
-        $checksum = end($parts);
+        // Format Kontrolü: MIS-XXXX-XXXX-XXXX
+        if (preg_match('/^MIS-([A-Z0-9]{4})-([A-Z0-9]{4})-([A-Z0-9]{4})$/i', $clean, $matches)) {
+            $payload = strtoupper($matches[1] . $matches[2]);
+            $checksum = strtoupper($matches[3]);
+            $expected_hash = strtoupper(substr(hash_hmac('sha256', $payload . self::SECRET_SALT, self::SECRET_SALT), 0, 4));
 
-        $expected_hash = strtoupper(substr(hash_hmac('sha256', $payload . self::SECRET_SALT, self::SECRET_SALT), 0, 4));
-
-        // Eğer checksum uyuyorsa veya genel PRO formatındaysa geçerli say
-        if ($checksum === $expected_hash || strpos($clean, 'MIS-PRO-') === 0 || strlen($clean) >= 14) {
-            return array('valid' => true, 'type' => 'PRO Lifetime');
+            if ($checksum === $expected_hash) {
+                return array('valid' => true, 'type' => 'PRO Lifetime');
+            }
         }
 
         return array('valid' => false);
     }
 
     /**
-     * Merkezi Sunucudan (misteknoloji360.com.tr) Doğrulama
+     * Merkezi Sunucudan / Buluttan (misteknoloji360.com.tr & GitHub) Doğrulama
      */
     private static function verify_remote_server($key, $domain) {
-        $api_url = 'https://misteknoloji360.com.tr/api/license-verify';
+        // 1. Bulut licenses.json kontrolü
+        $cloud_url = 'https://raw.githubusercontent.com/akkaya6611/ai-content-seo-assistant/main/licenses.json';
+        $cloud_res = wp_remote_get($cloud_url, array(
+            'timeout'   => 5,
+            'sslverify' => false,
+        ));
 
+        if (!is_wp_error($cloud_res) && wp_remote_retrieve_response_code($cloud_res) === 200) {
+            $list = json_decode(wp_remote_retrieve_body($cloud_res), true);
+            if (is_array($list)) {
+                foreach ($list as $lic) {
+                    if (strcasecmp($lic['key'] ?? '', $key) === 0) {
+                        if (($lic['status'] ?? 'active') !== 'active') {
+                            return array('success' => false, 'message' => __('Bu lisans askıya alınmış veya iptal edilmiştir.', 'ai-content-seo-assistant'));
+                        }
+                        $lic_domain = preg_replace('/^www\./i', '', strtolower(trim($lic['domain'] ?? '')));
+                        if (!empty($lic_domain) && $lic_domain !== '*' && $lic_domain !== $domain) {
+                            return array('success' => false, 'message' => sprintf(__('Bu lisans başka bir alan adına (%s) aittir.', 'ai-content-seo-assistant'), $lic_domain));
+                        }
+                        return array('success' => true, 'type' => $lic['type'] ?? 'PRO Lifetime');
+                    }
+                }
+            }
+        }
+
+        // 2. Web Servisi Doğrulaması
+        $api_url = 'https://misteknoloji360.com.tr/api/license-verify';
         $response = wp_remote_post($api_url, array(
-            'timeout'   => 10,
-            'sslverify' => apply_filters('ai_seo_sslverify', true),
+            'timeout'   => 5,
+            'sslverify' => false,
             'body'      => array(
                 'license_key' => $key,
                 'domain'      => $domain,
@@ -191,16 +220,14 @@ class AI_SEO_License_Manager {
             ),
         ));
 
-        if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
-            return array('success' => false);
-        }
-
-        $json = json_decode(wp_remote_retrieve_body($response), true);
-        if (!empty($json['success']) && $json['success'] === true) {
-            return array(
-                'success' => true,
-                'type'    => $json['license_type'] ?? 'PRO',
-            );
+        if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200) {
+            $json = json_decode(wp_remote_retrieve_body($response), true);
+            if (!empty($json['success']) && $json['success'] === true) {
+                return array(
+                    'success' => true,
+                    'type'    => $json['license_type'] ?? 'PRO Lifetime',
+                );
+            }
         }
 
         return array('success' => false);
