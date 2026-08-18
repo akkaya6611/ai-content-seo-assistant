@@ -100,19 +100,28 @@ class AI_SEO_Cron_Autopilot {
             $this->options['autopilot_topics'] = implode("\n", $topic_lines);
             update_option('ai_seo_assistant_options', $this->options);
         } else {
-            // Eğer havuz bittiyse ve otomatik konu üretimi açıksa AI'dan konu iste
-            if (!empty($this->options['autopilot_auto_suggest'])) {
-                $suggest_prompt = "Bir mobilya, dekorasyon, yer sofrası ve ev yaşamı blogu için ilgi çekici, Google'da aranma potansiyeli yüksek, özgün 1 adet blog yazısı başlığı öner. Sadece başlığı yaz, tırnak veya ek açıklama ekleme.";
-                $suggest_res = $this->ai_client->generate($suggest_prompt, '', array('provider' => $this->options['autopilot_provider'] ?? 'gemini'));
-                if ($suggest_res['success']) {
-                    $current_topic = trim($suggest_res['content'], "\"'\n\r ");
-                }
+            // Eğer havuz bittiyse AI'dan anlık konu iste
+            $site_name = get_bloginfo('name') ?: 'Ratemo Mobilya';
+            $suggest_prompt = "Bir '{$site_name}' blog sitesi için ilgi çekici, Google aramalarında öne çıkacak, özgün, merak uyandıran 1 adet Türkçe blog makalesi başlığı yaz. Sadece başlığı döndür, tırnak veya ek açıklama yazma.";
+            $suggest_res = $this->ai_client->generate($suggest_prompt, '', array('provider' => $this->options['autopilot_provider'] ?? 'gemini'));
+            if ($suggest_res['success'] && !empty(trim($suggest_res['content']))) {
+                $current_topic = trim($suggest_res['content'], "\"'\n\r ");
+            } else {
+                $fallback_topics = array(
+                    'Modern Ev Dekorasyonunda Ahşap Mobilya Seçimi ve Bakım Rehberi',
+                    'Küçük Evler ve Salonlar İçin Fonksiyonel Yer Sofrası ve Mobilya Çözümleri',
+                    '2026 Mobilya Trendleri: Konfor ve Şıklığı Bir Araya Getiren Tasarımlar',
+                    'Kaliteli Ahşap Mobilya Nasıl Anlaşılır? Alışveriş Yaparken Dikkat Edilmesi Gerekenler',
+                    'Geleneksel ve Modern Yaşamda Yer Sofrası Kültürü ve Kullanım Avantajları',
+                    'Dar Mutfaklar İçin Pratik Alan Kazandıran Katlanır Masa Çözümleri',
+                    'Doğal Ahşap Mobilyaların Ev Sağlığına ve Enerjisine Faydaları'
+                );
+                $current_topic = $fallback_topics[array_rand($fallback_topics)];
             }
         }
 
         if (empty($current_topic)) {
-            $this->log_autopilot_result(__('Hata: Konu havuzu boş ve otomatik konu türetme kapalı.', 'ai-content-seo-assistant'), 'error');
-            return array('success' => false, 'message' => __('Konu havuzunda yazılacak konu kalmadı.', 'ai-content-seo-assistant'));
+            $current_topic = '2026 Modern Mobilya ve Ev Dekorasyonu Trendleri';
         }
 
         $provider = $this->options['autopilot_provider'] ?? 'gemini';
