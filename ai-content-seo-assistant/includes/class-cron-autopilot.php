@@ -148,11 +148,22 @@ class AI_SEO_Cron_Autopilot {
 
         $content_html = $article_res['content'];
 
+        // Eğer makale gövdesinde H1 veya H2 ana başlığı varsa onu tam başlık olarak al
+        if (preg_match('/<h[12][^>]*>(.*?)<\/h[12]>/i', $content_html, $hMatches)) {
+            $extracted_h = $this->clean_title_text($hMatches[1]);
+            if (mb_strlen($extracted_h, 'UTF-8') >= 8) {
+                $current_topic = $extracted_h;
+            }
+        }
+
         // 3. SEO Meta Başlığı ve Açıklamasını Üret
         $meta_title = $this->clean_title_text($current_topic);
         $title_res = $this->ai_client->generate("Konu: '{$current_topic}'. Bu içerik için Google arama sonuçlarında en yüksek tıklama oranını (CTR) alacak 50-60 karakterlik tek bir SEO başlığı yaz. Sadece başlığı döndür, tırnak veya ek açıklama yazma.", '', array('provider' => $provider, 'max_tokens' => 80, 'temperature' => 0.5));
         if ($title_res['success']) {
-            $meta_title = $this->clean_title_text($title_res['content']);
+            $cleaned_t = $this->clean_title_text($title_res['content']);
+            if (mb_strlen($cleaned_t, 'UTF-8') >= 8) {
+                $meta_title = $cleaned_t;
+            }
         }
 
         $meta_desc = '';
