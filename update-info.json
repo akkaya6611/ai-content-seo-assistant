@@ -1,7 +1,7 @@
 {
   "name": "AI Content & SEO Assistant",
   "slug": "ai-content-seo-assistant",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "author": "<a href=\"https://misteknoloji360.com.tr/\">Serkan AKKAYA</a>",
   "homepage": "https://misteknoloji360.com.tr/",
   "download_url": "https://raw.githubusercontent.com/akkaya6611/ai-content-seo-assistant/main/ai-content-seo-assistant.zip",
@@ -11,6 +11,6 @@
   "last_updated": "2026-08-18",
   "sections": {
     "description": "Yapay zeka destekli otomatik içerik üretimi, günlük zamanlanmış makale yayınlayıcı (Cron), canlı SERP önizlemeli SEO meta etiketleri, Schema.org JSON-LD yapısal veri motoru ve Lisans & Aktivasyon koruma sistemi. Groq, Google Gemini, DeepSeek, OpenRouter, Claude ve OpenAI destekler.",
-    "changelog": "<h4>1.2.2 (Tam Başlık Seçimi & Otomatik H1/H2 Başlık Senkronizasyonu)</h4><ul><li>🎯 '5 Farklı Başlık Önerisi' kısmına her başlık için tek tıkla '🎯 Bu Başlığı Seç' butonu eklendi (Gutenberg, Klasik Editör ve SEO başlığına anında aktarılır).</li><li>✨ Yarım veya eksik kalan başlıklar ('Ahş' vb.) engellendi; üretilen makale gövdesindeki tam ana başlık otomatik olarak WordPress yazı başlığına atanır.</li><li>👨‍💻 Geliştirici: Serkan AKKAYA (misteknoloji360.com.tr)</li></ul>"
+    "changelog": "<h4>1.2.3 (Google Gemini 3.6 Flash & 3.1 Pro Standartları)</h4><ul><li>🚀 Google'ın kullanımdan kaldırdığı 'gemini-2.5-pro' modeli yerine en yeni resmi 'gemini-3.6-flash' ve 'gemini-3.1-pro-preview' modelleri entegre edildi.</li><li>🛡️ 404/400 model hatalarına karşı akıllı otomatik model geçişi devreye alındı.</li><li>👨‍💻 Geliştirici: Serkan AKKAYA (misteknoloji360.com.tr)</li></ul>"
   }
 }
