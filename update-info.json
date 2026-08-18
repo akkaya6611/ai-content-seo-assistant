@@ -1,7 +1,7 @@
 {
   "name": "AI Content & SEO Assistant",
   "slug": "ai-content-seo-assistant",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": "<a href=\"https://misteknoloji360.com.tr/\">Serkan AKKAYA</a>",
   "homepage": "https://misteknoloji360.com.tr/",
   "download_url": "https://raw.githubusercontent.com/akkaya6611/ai-content-seo-assistant/main/ai-content-seo-assistant.zip",
@@ -11,6 +11,6 @@
   "last_updated": "2026-08-18",
   "sections": {
     "description": "Yapay zeka destekli otomatik içerik üretimi, günlük zamanlanmış makale yayınlayıcı (Cron), canlı SERP önizlemeli SEO meta etiketleri, Schema.org JSON-LD yapısal veri motoru ve Lisans & Aktivasyon koruma sistemi. Groq, Google Gemini, DeepSeek, OpenRouter, Claude ve OpenAI destekler.",
-    "changelog": "<h4>1.0.4 (Özel Ana Menü Tasarımı)</h4><ul><li>🚀 Eklenti Ayarlar altından çıkarılarak WordPress sol ana menüsüne özel <strong>'AI SEO Asistanı'</strong> olarak taşındı.</li><li>📋 Hızlı erişim için alt menüler (AI Modelleri, Otomatik Pilot, Lisans, Güncellemeler) eklendi.</li><li>👨‍💻 Geliştirici: Serkan AKKAYA (misteknoloji360.com.tr)</li></ul>"
+    "changelog": "<h4>1.0.5 (Özel Sol Menü & Çift Erişim Garantisi)</h4><ul><li>🚀 Sol ana menü konumu ve standart Dashicon ikonları optimize edildi.</li><li>📌 Hem sol ana menüden hem de Ayarlar altından erişim desteği sağlandı.</li><li>👨‍💻 Geliştirici: Serkan AKKAYA (misteknoloji360.com.tr)</li></ul>"
   }
 }
