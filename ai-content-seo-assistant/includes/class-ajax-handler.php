@@ -39,6 +39,10 @@ class AI_SEO_Ajax_Handler {
             wp_send_json_error(array('message' => __('Yetkisiz işlem.', 'ai-content-seo-assistant')));
         }
 
+        if (class_exists('AI_SEO_License_Manager') && !AI_SEO_License_Manager::is_licensed()) {
+            wp_send_json_error(array('message' => __('🔒 Eklenti Lisansınız Etkin Değil! Lütfen Ayarlar > Lisans sekmesinden lisans anahtarınızı etkinleştirin (misteknoloji360.com.tr).', 'ai-content-seo-assistant')));
+        }
+
         $autopilot = new AI_SEO_Cron_Autopilot();
         $result = $autopilot->execute_autopilot_generation(true);
 
@@ -57,6 +61,10 @@ class AI_SEO_Ajax_Handler {
 
         if (!current_user_can('edit_posts')) {
             wp_send_json_error(array('message' => __('Yetkisiz işlem.', 'ai-content-seo-assistant')));
+        }
+
+        if (class_exists('AI_SEO_License_Manager') && !AI_SEO_License_Manager::is_licensed()) {
+            wp_send_json_error(array('message' => __('🔒 Eklenti Lisansınız Etkin Değil! Lütfen Ayarlar > Lisans sekmesinden lisans anahtarınızı etkinleştirin (misteknoloji360.com.tr).', 'ai-content-seo-assistant')));
         }
 
         $type = sanitize_text_field($_POST['gen_type'] ?? 'article');
@@ -124,6 +132,10 @@ class AI_SEO_Ajax_Handler {
             wp_send_json_error(array('message' => __('Yetkisiz işlem.', 'ai-content-seo-assistant')));
         }
 
+        if (class_exists('AI_SEO_License_Manager') && !AI_SEO_License_Manager::is_licensed()) {
+            wp_send_json_error(array('message' => __('🔒 Eklenti Lisansınız Etkin Değil! Lütfen Ayarlar > Lisans sekmesinden lisans anahtarınızı etkinleştirin (misteknoloji360.com.tr).', 'ai-content-seo-assistant')));
+        }
+
         $text = wp_kses_post($_POST['text'] ?? '');
         $action = sanitize_text_field($_POST['rephrase_action'] ?? 'rephrase');
         $provider = sanitize_text_field($_POST['provider'] ?? '');
@@ -173,6 +185,10 @@ class AI_SEO_Ajax_Handler {
 
         if (!current_user_can('edit_posts')) {
             wp_send_json_error(array('message' => __('Yetkisiz işlem.', 'ai-content-seo-assistant')));
+        }
+
+        if (class_exists('AI_SEO_License_Manager') && !AI_SEO_License_Manager::is_licensed()) {
+            wp_send_json_error(array('message' => __('🔒 Eklenti Lisansınız Etkin Değil! Lütfen Ayarlar > Lisans sekmesinden lisans anahtarınızı etkinleştirin (misteknoloji360.com.tr).', 'ai-content-seo-assistant')));
         }
 
         $field = sanitize_text_field($_POST['field'] ?? 'title'); // 'title' veya 'desc'
