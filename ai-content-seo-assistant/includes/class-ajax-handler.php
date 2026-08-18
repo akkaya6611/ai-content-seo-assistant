@@ -78,12 +78,12 @@ class AI_SEO_Ajax_Handler {
             wp_send_json_error(array('message' => __('Lütfen bir konu veya başlık girin.', 'ai-content-seo-assistant')));
         }
 
-        $system_prompt = "Sen Google SEO, içerik pazarlaması ve profesyonel Türkçe blog yazımı konusunda uzman bir baş editörsün.\n\nKURALLAR:\n1. Yanıtını DOĞRUDAN saf HTML biçiminde (<h2>, <h3>, <p>, <ul>, <li>, <strong>, <blockquote>) oluştur.\n2. Kod blokları veya markdown backtick (```html) ASLA ekleme.\n3. Girişte okuyucuyu kancalayan (Hook) merak uyandırıcı bir giriş yap.\n4. Alt başlıklar (H2, H3) ve maddeli listelerle zenginleştir.\n5. Asla robotik kalıplar kullanma; doğal, akıcı, ikna edici ve profesyonel Türkçe (" . $language . ") yaz.\n6. Selamlama veya açıklama yazma, doğrudan içeriği döndür.";
+        $system_prompt = "Sen Google SEO, içerik pazarlaması ve profesyonel Türkçe blog yazımı konusunda uzman bir baş editörsün.\n\nKESİN KURALLAR:\n1. KESİNLİKLE düşünce süreci (thinking process, chain of thought, analyze input vb.) YAZMA.\n2. KESİNLİKLE İngilizce kelime, parantez içi İngilizce çeviri veya açıklama EKLEME.\n3. KESİNLİKLE 'Here is...', 'Sure', 'Tabii ki' gibi giriş cümleleri YAZMA.\n4. Yanıtını DOĞRUDAN saf HTML biçiminde (<h2>, <h3>, <p>, <ul>, <li>, <strong>, <blockquote>) oluştur.\n5. Kod blokları veya markdown backtick (```html) ASLA ekleme.\n6. Girişte okuyucuyu kancalayan (Hook) merak uyandırıcı bir giriş yap.\n7. Alt başlıklar (H2, H3), maddeli listeler ve SSS (FAQ) bölümleriyle zenginleştir.\n8. Dil: %100 kusursuz, akıcı, zengin ve profesyonel Türkçe (" . $language . ").";
 
         $user_prompt = "";
         switch ($type) {
             case 'titles':
-                $system_prompt = "Sen Google arama motoru (SERP) ve yüksek tıklama oranı (CTR) uzmanısın. Kullanıcıların Google'da en çok tıkladığı, doğal, merak uyandıran ve profesyonel başlıklar üretirsin. Sadece başlıkları döndür, selamlama veya açıklama ASLA yazma.";
+                $system_prompt = "Sen Google arama motoru (SERP) ve yüksek tıklama oranı (CTR) uzmanısın. KESİNLİKLE düşünce süreci veya İngilizce çeviri yazma. Sadece saf Türkçe başlıkları döndür.";
                 $user_prompt = "Konu: '{$topic}'. Odak Anahtar Kelimeler: '{$keywords}'.\n\nBu konu hakkında Google aramalarında en çok tıklanacak 5 adet özgün ve dikkat çekici Türkçe blog başlığı önerisi yaz.\n\nKurallar:\n- Uzunlukları 45-65 karakter arasında olsun.\n- Liste halinde (1., 2., 3., 4., 5.) olarak sadece başlıkları yaz.";
                 break;
 
@@ -219,7 +219,7 @@ class AI_SEO_Ajax_Handler {
         $keyword = sanitize_text_field($_POST['keyword'] ?? '');
         $provider = sanitize_text_field($_POST['provider'] ?? '');
 
-        $system_prompt = "Sen bir Google SERP ve Tıklama Oranı (CTR) uzmanısın. SADECE tek bir nihai metin döndür. Tırnak işareti, 'Başlık:', 'Açıklama:' gibi etiketler veya konuşma cümleleri ASLA ekleme.";
+        $system_prompt = "Sen bir Google SERP ve Tıklama Oranı (CTR) uzmanısın. SADECE tek bir nihai metin döndür. Düşünce süreci (thinking process), İngilizce kelime/çeviri, tırnak işareti, 'Başlık:', 'Açıklama:' gibi etiketler veya konuşma cümleleri KESİNLİKLE ekleme.";
 
         if ($field === 'title') {
             $user_prompt = "Aşağıdaki içerik için Google arama sonuçlarında (SERP) en yüksek tıklamayı alacak profesyonel ve doğal tek bir SEO Meta Başlığı yaz.\n\nİçerik Başlığı: {$post_title}\nOdak Anahtar Kelime: {$keyword}\nÖzet: " . substr($post_content, 0, 300) . "\n\nKurallar:\n- Uzunluk kesinlikle 45 ile 60 karakter arasında olmalı (Google'da kesilmemeli).\n- Odak anahtar kelimeyi başlığın içine doğal şekilde yerleştir.\n- Sadece saf başlık metnini döndür.";
