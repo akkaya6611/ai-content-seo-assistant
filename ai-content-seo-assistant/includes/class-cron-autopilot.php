@@ -100,28 +100,28 @@ class AI_SEO_Cron_Autopilot {
             $this->options['autopilot_topics'] = implode("\n", $topic_lines);
             update_option('ai_seo_assistant_options', $this->options);
         } else {
-            // Eğer havuz bittiyse AI'dan anlık konu iste
+            // Eğer havuz bittiyse AI'dan anlık sektör odaklı profesyonel konu iste
             $site_name = get_bloginfo('name') ?: 'Ratemo Mobilya';
-            $suggest_prompt = "Bir '{$site_name}' blog sitesi için ilgi çekici, Google aramalarında öne çıkacak, özgün, merak uyandıran 1 adet Türkçe blog makalesi başlığı yaz. Sadece başlığı döndür, tırnak veya ek açıklama yazma.";
-            $suggest_res = $this->ai_client->generate($suggest_prompt, '', array('provider' => $this->options['autopilot_provider'] ?? 'gemini'));
+            $suggest_prompt = "Sen Türkiye'nin önde gelen mobilya, dekorasyon ve ev yaşamı blog editörüsün. '{$site_name}' web sitesi için Google'da arama hacmi yüksek, kullanıcıların merak ettiği, doğal, profesyonel ve yüksek tıklama alacak 1 adet Türkçe blog makale başlığı yaz.\n\nKURALLAR:\n- Uzunluk 45-60 karakter olsun.\n- Sadece saf başlık metnini yaz.\n- Tırnak işareti, 'Başlık:', selamlama veya açıklama ASLA ekleme.";
+            $suggest_res = $this->ai_client->generate($suggest_prompt, '', array('provider' => $this->options['autopilot_provider'] ?? 'gemini', 'max_tokens' => 100, 'temperature' => 0.7));
             if ($suggest_res['success'] && !empty(trim($suggest_res['content']))) {
-                $current_topic = trim($suggest_res['content'], "\"'\n\r ");
+                $current_topic = $this->clean_title_text($suggest_res['content']);
             } else {
                 $fallback_topics = array(
-                    'Modern Ev Dekorasyonunda Ahşap Mobilya Seçimi ve Bakım Rehberi',
-                    'Küçük Evler ve Salonlar İçin Fonksiyonel Yer Sofrası ve Mobilya Çözümleri',
-                    '2026 Mobilya Trendleri: Konfor ve Şıklığı Bir Araya Getiren Tasarımlar',
-                    'Kaliteli Ahşap Mobilya Nasıl Anlaşılır? Alışveriş Yaparken Dikkat Edilmesi Gerekenler',
-                    'Geleneksel ve Modern Yaşamda Yer Sofrası Kültürü ve Kullanım Avantajları',
-                    'Dar Mutfaklar İçin Pratik Alan Kazandıran Katlanır Masa Çözümleri',
-                    'Doğal Ahşap Mobilyaların Ev Sağlığına ve Enerjisine Faydaları'
+                    'Ahşap Yer Sofrası Modelleri ve Doğru Seçim Rehberi',
+                    'Küçük Evler İçin Katlanır Yemek Masası Avantajları ve Fiyatları',
+                    '2026 Modern Mobilya ve Ev Dekorasyonu Trendleri',
+                    'Kaliteli Ahşap Mobilya Nasıl Anlaşılır? Satın Alma Rehberi',
+                    'Geleneksel Yer Sofrası Kültürü ve Modern Evlerdeki Yeri',
+                    'Dar Mutfaklar İçin Pratik Alan Kazandıran Masa Çözümleri',
+                    'Doğal Masif Ahşap Mobilyaların Ev Sağlığına ve Yaşama Faydaları'
                 );
                 $current_topic = $fallback_topics[array_rand($fallback_topics)];
             }
         }
 
         if (empty($current_topic)) {
-            $current_topic = '2026 Modern Mobilya ve Ev Dekorasyonu Trendleri';
+            $current_topic = 'Ahşap Yer Sofrası Modelleri ve Doğru Seçim Rehberi';
         }
 
         $provider = $this->options['autopilot_provider'] ?? 'gemini';
@@ -130,14 +130,15 @@ class AI_SEO_Cron_Autopilot {
         $post_status = $this->options['autopilot_status'] ?? 'publish'; // 'publish' veya 'draft'
         $category_id = intval($this->options['autopilot_category'] ?? 0);
 
-        // 2. Makale İçeriğini Üret
-        $system_prompt = "Sen uzman bir SEO içerik yazarı ve Türkçe blog editörüsün. WordPress için yüksek kaliteli, okunabilirliği yüksek, SEO uyumlu ve zengin içerikler üretiyorsun. Yanıtını doğrudan HTML biçiminde (<h2>, <h3>, <p>, <ul>, <li>, <strong> etiketleriyle) oluştur. Kod blokları veya markdown backtick (```html) ekleme, doğrudan saf HTML metni döndür. Dil: " . $language . ".";
+        // 2. Makale İçeriğini Üret (Derinlemesine & SEO Odaklı)
+        $system_prompt = "Sen uzman bir SEO içerik yazarı ve Türkçe blog editörüsün. WordPress için Google aramalarında en üst sıralara çıkacak, okunabilirliği çok yüksek, zengin ve kaliteli içerikler üretiyorsun.\n\nKURALLAR:\n1. Yanıtını DOĞRUDAN saf HTML biçiminde (<h2>, <h3>, <p>, <ul>, <li>, <strong> etiketleriyle) oluştur.\n2. Kod blokları veya markdown backtick (```html) ASLA ekleme.\n3. H2 ve H3 başlıkları akıcı, ilgi çekici ve çözüm odaklı olsun.\n4. Madde imleri (<ul><li>) ve pratik ipuçları içersin.\n5. Makale sonunda 3-4 soruluk Sıkça Sorulan Sorular (FAQ) bölümü ekle.\n6. Dil: Kusursuz, akıcı ve profesyonel Türkçe (" . $language . ").";
         
-        $article_prompt = "Konu: '{$current_topic}'. Yazım Tonu: '{$tone}'. Bu konu hakkında baştan sona kapsamlı, detaylı, alt başlıklara ayrılmış (H2, H3), listeler ve ipuçları içeren, SEO odaklı tam bir blog makalesi yaz.";
+        $article_prompt = "Konu Başlığı: '{$current_topic}'.\nYazım Tonu: '{$tone}'.\n\nBu konu hakkında baştan sona kapsamlı, detaylı, alt başlıklara ayrılmış (H2, H3), listeler, pratik kullanım ipuçları ve SSS bölümü içeren, SEO odaklı tam bir blog makalesi yaz.";
 
         $article_res = $this->ai_client->generate($article_prompt, $system_prompt, array(
             'provider'   => $provider,
             'max_tokens' => 3000,
+            'temperature'=> 0.7,
         ));
 
         if (!$article_res['success']) {
@@ -148,16 +149,17 @@ class AI_SEO_Cron_Autopilot {
         $content_html = $article_res['content'];
 
         // 3. SEO Meta Başlığı ve Açıklamasını Üret
-        $meta_title = $current_topic;
-        $title_res = $this->ai_client->generate("Konu: '{$current_topic}'. Google arama sonuçlarında yüksek tıklama oranı alacak en fazla 55-60 karakterlik tek bir SEO başlığı yaz. Sadece başlığı döndür.", '', array('provider' => $provider, 'max_tokens' => 100));
+        $meta_title = $this->clean_title_text($current_topic);
+        $title_res = $this->ai_client->generate("Konu: '{$current_topic}'. Bu içerik için Google arama sonuçlarında en yüksek tıklama oranını (CTR) alacak 50-60 karakterlik tek bir SEO başlığı yaz. Sadece başlığı döndür, tırnak veya ek açıklama yazma.", '', array('provider' => $provider, 'max_tokens' => 80, 'temperature' => 0.5));
         if ($title_res['success']) {
-            $meta_title = trim($title_res['content'], "\"'\n\r ");
+            $meta_title = $this->clean_title_text($title_res['content']);
         }
 
         $meta_desc = '';
-        $desc_res = $this->ai_client->generate("Konu: '{$current_topic}'. Google arama sonuçları için 130-155 karakterlik merak uyandıran bir meta açıklaması yaz. Sadece açıklamayı döndür.", '', array('provider' => $provider, 'max_tokens' => 150));
+        $desc_res = $this->ai_client->generate("Konu: '{$current_topic}'. Bu yazı için Google aramalarında görünecek, merak uyandıran ve tıklamaya teşvik eden 130-155 karakterlik tek bir SEO meta açıklaması yaz. Sadece açıklamayı döndür.", '', array('provider' => $provider, 'max_tokens' => 150, 'temperature' => 0.5));
         if ($desc_res['success']) {
-            $meta_desc = trim($desc_res['content'], "\"'\n\r ");
+            $meta_desc = $this->clean_meta_desc($desc_res['content']);
+        }
         }
 
         // 4. WordPress Yazısı Olarak Kaydet
@@ -224,5 +226,24 @@ class AI_SEO_Cron_Autopilot {
         // Son 50 kaydı tut
         $logs = array_slice($logs, 0, 50);
         update_option('ai_seo_autopilot_logs', $logs);
+    }
+
+    /**
+     * Başlık Metnini Temizle (Prefix, tırnak, numara temizleme)
+     */
+    private function clean_title_text($raw) {
+        $t = trim(wp_strip_all_tags($raw), "\"'\n\r#* ");
+        $t = preg_replace('/^(başlık|seo başlığı|title|öneri|konu)\s*:\s*/iu', '', $t);
+        $t = preg_replace('/^(\d+[\.\-\)]\s*)/u', '', $t);
+        return trim($t, "\"'\n\r#* ");
+    }
+
+    /**
+     * Meta Açıklama Metnini Temizle
+     */
+    private function clean_meta_desc($raw) {
+        $t = trim(wp_strip_all_tags($raw), "\"'\n\r#* ");
+        $t = preg_replace('/^(açıklama|meta açıklama|meta description|description)\s*:\s*/iu', '', $t);
+        return trim($t, "\"'\n\r#* ");
     }
 }
