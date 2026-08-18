@@ -288,6 +288,17 @@ class AI_SEO_Ajax_Handler {
         $latest_version = $remote_info['version'] ?? '1.0.0';
 
         if (version_compare(AI_SEO_VERSION, $latest_version, '<')) {
+            $transient = get_site_transient('update_plugins');
+            if (!is_object($transient)) {
+                $transient = new stdClass();
+            }
+            if (empty($transient->checked)) {
+                $transient->checked = array();
+            }
+            $transient->checked[plugin_basename(AI_SEO_PLUGIN_DIR . 'ai-content-seo-assistant.php')] = AI_SEO_VERSION;
+            $transient = $updater->check_for_plugin_update($transient);
+            set_site_transient('update_plugins', $transient);
+
             wp_send_json_success(array(
                 'has_update' => true,
                 'message'    => sprintf(__('🎉 Yeni bir sürüm mevcut! (Mevcut: v%s &rarr; Yeni: v%s). WordPress Eklentiler sayfasından tek tıkla güncelleyebilirsiniz.', 'ai-content-seo-assistant'), AI_SEO_VERSION, $latest_version),
