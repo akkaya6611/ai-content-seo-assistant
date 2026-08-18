@@ -313,9 +313,58 @@
             }, 2000);
         });
 
-        // 8. Editöre Aktar (Insert to Gutenberg or Classic Editor)
+        // 8. Başlığı WordPress Editörüne Aktarma
+        function setPostTitle(title) {
+            if (!title) return;
+            title = $.trim(title);
+            // Gutenberg Block Editor
+            if (window.wp && wp.data && wp.data.dispatch('core/editor')) {
+                try {
+                    wp.data.dispatch('core/editor').editPost({ title: title });
+                } catch (e) {}
+            }
+            // Classic Editor
+            $('#title').val(title);
+            $('#title-prompt-text').addClass('screen-reader-text');
+
+            // Form alanlarını güncelle
+            $('#ai_gen_topic').val(title);
+            if (!$('#ai_seo_meta_title').val() || $('#ai_seo_meta_title').val().length < 6) {
+                $('#ai_seo_meta_title').val(title);
+            }
+            updateSerpAndChecklist();
+        }
+
+        // Önerilen Başlığı Seç ve Uygula
+        $(document).on('click', '.ai-btn-apply-title', function(e) {
+            e.preventDefault();
+            var title = $(this).data('title');
+            setPostTitle(title);
+            var $btn = $(this);
+            var orig = $btn.text();
+            $btn.text('✓ Seçildi!').css('background', '#16a34a');
+            setTimeout(function() {
+                $btn.text(orig).css('background', '#2563eb');
+            }, 2500);
+        });
+
+        // 9. Editöre Aktar (Insert to Gutenberg or Classic Editor)
         function insertContentToEditor(contentHtml) {
             if (!contentHtml) return;
+
+            // Eğer mevcut yazı başlığı boş veya çok kısaysa (örn: "Ahş"), içerikteki ilk H1/H2 başlığını otomatik başlık yap
+            var currentTitle = getPostTitle();
+            if (!currentTitle || $.trim(currentTitle).length < 6) {
+                var match = contentHtml.match(/<h[12][^>]*>(.*?)<\/h[12]>/i);
+                if (match && match[1]) {
+                    var cleanH = $('<div>').html(match[1]).text().trim();
+                    if (cleanH.length >= 6) {
+                        setPostTitle(cleanH);
+                    }
+                } else if ($('#ai_gen_topic').val() && $.trim($('#ai_gen_topic').val()).length >= 6) {
+                    setPostTitle($('#ai_gen_topic').val().trim());
+                }
+            }
 
             // Gutenberg Block Editor
             if (window.wp && wp.data && wp.blocks && wp.data.dispatch('core/block-editor')) {
