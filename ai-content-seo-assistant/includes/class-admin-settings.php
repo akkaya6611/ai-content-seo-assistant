@@ -22,17 +22,27 @@ class AI_SEO_Admin_Settings {
     }
 
     /**
-     * Ana Yönetici Menüsüne Ekle (Özel Sol Menü)
+     * Ana Yönetici Menüsüne Ekle (Özel Sol Menü & Ayarlar Altı Çift Garanti)
      */
     public function add_plugin_admin_menu() {
+        // 1. Sol Ana Menü
         add_menu_page(
             __('AI İçerik & SEO Asistanı', 'ai-content-seo-assistant'),
             __('AI SEO Asistanı', 'ai-content-seo-assistant'),
             'manage_options',
             'ai-content-seo-assistant',
             array($this, 'render_settings_page'),
-            'dashicons-superhero',
-            28
+            'dashicons-chart-line',
+            30
+        );
+
+        // 2. Ayarlar Altı (Erişim Kolaylığı)
+        add_options_page(
+            __('AI İçerik & SEO Asistanı', 'ai-content-seo-assistant'),
+            __('AI SEO Asistanı', 'ai-content-seo-assistant'),
+            'manage_options',
+            'ai-content-seo-assistant',
+            array($this, 'render_settings_page')
         );
 
         add_submenu_page(
