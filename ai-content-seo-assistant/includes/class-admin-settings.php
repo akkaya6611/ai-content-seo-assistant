@@ -251,7 +251,7 @@ class AI_SEO_Admin_Settings {
                             <p class="description"><?php esc_html_e('Işık hızında Llama 3.3 70B ve DeepSeek R1 modelleri (Ücretsiz kota mevcuttur).', 'ai-content-seo-assistant'); ?> <a href="https://console.groq.com/keys" target="_blank"><?php esc_html_e('Anahtar Al', 'ai-content-seo-assistant'); ?> &rarr;</a></p>
                             <div class="ai-field-group">
                                 <label for="groq_key"><?php esc_html_e('API Anahtarı:', 'ai-content-seo-assistant'); ?></label>
-                                <input type="password" id="groq_key" name="ai_seo_assistant_options[groq_key]" value="<?php echo esc_attr($opts['groq_key'] ?? ''); ?>" class="regular-text" placeholder="gsk_..." />
+                                <input type="text" id="groq_key" name="ai_seo_assistant_options[groq_key]" value="<?php echo esc_attr($opts['groq_key'] ?? ''); ?>" class="regular-text" placeholder="gsk_..." autocomplete="off" spellcheck="false" style="font-family:monospace; font-size:14px;" />
                             </div>
                             <div class="ai-field-group">
                                 <label for="groq_model"><?php esc_html_e('Model:', 'ai-content-seo-assistant'); ?></label>
@@ -275,7 +275,7 @@ class AI_SEO_Admin_Settings {
                             <p class="description"><?php esc_html_e('Tek API anahtarı ile Gemini 2.0, DeepSeek R1, Llama 3.3 ve onlarca modeli kullanın.', 'ai-content-seo-assistant'); ?> <a href="https://openrouter.ai/settings/keys" target="_blank"><?php esc_html_e('Anahtar Al', 'ai-content-seo-assistant'); ?> &rarr;</a></p>
                             <div class="ai-field-group">
                                 <label for="openrouter_key"><?php esc_html_e('API Anahtarı:', 'ai-content-seo-assistant'); ?></label>
-                                <input type="password" id="openrouter_key" name="ai_seo_assistant_options[openrouter_key]" value="<?php echo esc_attr($opts['openrouter_key'] ?? ''); ?>" class="regular-text" placeholder="sk-or-v1-..." />
+                                <input type="text" id="openrouter_key" name="ai_seo_assistant_options[openrouter_key]" value="<?php echo esc_attr($opts['openrouter_key'] ?? ''); ?>" class="regular-text" placeholder="sk-or-v1-..." autocomplete="off" spellcheck="false" style="font-family:monospace; font-size:14px;" />
                             </div>
                             <div class="ai-field-group">
                                 <label for="openrouter_model"><?php esc_html_e('Model:', 'ai-content-seo-assistant'); ?></label>
@@ -306,7 +306,7 @@ class AI_SEO_Admin_Settings {
                             <p class="description"><?php esc_html_e('Google AI Studio üzerinden ücretsiz API anahtarı alabilirsiniz.', 'ai-content-seo-assistant'); ?> <a href="https://aistudio.google.com/app/apikey" target="_blank"><?php esc_html_e('Anahtar Al', 'ai-content-seo-assistant'); ?> &rarr;</a></p>
                             <div class="ai-field-group">
                                 <label for="gemini_key"><?php esc_html_e('API Anahtarı:', 'ai-content-seo-assistant'); ?></label>
-                                <input type="password" id="gemini_key" name="ai_seo_assistant_options[gemini_key]" value="<?php echo esc_attr($opts['gemini_key'] ?? ''); ?>" class="regular-text" placeholder="AIzaSy..." />
+                                <input type="text" id="gemini_key" name="ai_seo_assistant_options[gemini_key]" value="<?php echo esc_attr($opts['gemini_key'] ?? ''); ?>" class="regular-text" placeholder="AIzaSy..." autocomplete="off" spellcheck="false" style="font-family:monospace; font-size:14px;" />
                             </div>
                             <div class="ai-field-group">
                                 <label for="gemini_model"><?php esc_html_e('Model:', 'ai-content-seo-assistant'); ?></label>
@@ -330,7 +330,7 @@ class AI_SEO_Admin_Settings {
                             <p class="description"><?php esc_html_e('DeepSeek V3 / R1 modellerini doğrudan resmi API üzerinden kullanın.', 'ai-content-seo-assistant'); ?> <a href="https://platform.deepseek.com/api_keys" target="_blank"><?php esc_html_e('Anahtar Al', 'ai-content-seo-assistant'); ?> &rarr;</a></p>
                             <div class="ai-field-group">
                                 <label for="deepseek_key"><?php esc_html_e('API Anahtarı:', 'ai-content-seo-assistant'); ?></label>
-                                <input type="password" id="deepseek_key" name="ai_seo_assistant_options[deepseek_key]" value="<?php echo esc_attr($opts['deepseek_key'] ?? ''); ?>" class="regular-text" placeholder="sk-..." />
+                                <input type="text" id="deepseek_key" name="ai_seo_assistant_options[deepseek_key]" value="<?php echo esc_attr($opts['deepseek_key'] ?? ''); ?>" class="regular-text" placeholder="sk-..." autocomplete="off" spellcheck="false" style="font-family:monospace; font-size:14px;" />
                             </div>
                             <div class="ai-field-group">
                                 <label for="deepseek_model"><?php esc_html_e('Model:', 'ai-content-seo-assistant'); ?></label>
@@ -352,7 +352,7 @@ class AI_SEO_Admin_Settings {
                             <p class="description"><?php esc_html_e('Claude 3.7 Sonnet ve Claude 3.5 Haiku modelleri.', 'ai-content-seo-assistant'); ?> <a href="https://console.anthropic.com/settings/keys" target="_blank"><?php esc_html_e('Anahtar Al', 'ai-content-seo-assistant'); ?> &rarr;</a></p>
                             <div class="ai-field-group">
                                 <label for="anthropic_key"><?php esc_html_e('API Anahtarı:', 'ai-content-seo-assistant'); ?></label>
-                                <input type="password" id="anthropic_key" name="ai_seo_assistant_options[anthropic_key]" value="<?php echo esc_attr($opts['anthropic_key'] ?? ''); ?>" class="regular-text" placeholder="sk-ant-..." />
+                                <input type="text" id="anthropic_key" name="ai_seo_assistant_options[anthropic_key]" value="<?php echo esc_attr($opts['anthropic_key'] ?? ''); ?>" class="regular-text" placeholder="sk-ant-..." autocomplete="off" spellcheck="false" style="font-family:monospace; font-size:14px;" />
                             </div>
                             <div class="ai-field-group">
                                 <label for="anthropic_model"><?php esc_html_e('Model:', 'ai-content-seo-assistant'); ?></label>
@@ -375,7 +375,7 @@ class AI_SEO_Admin_Settings {
                             <p class="description"><?php esc_html_e('GPT-4o, GPT-4o-mini ve o3-mini modelleri.', 'ai-content-seo-assistant'); ?> <a href="https://platform.openai.com/api-keys" target="_blank"><?php esc_html_e('Anahtar Al', 'ai-content-seo-assistant'); ?> &rarr;</a></p>
                             <div class="ai-field-group">
                                 <label for="openai_key"><?php esc_html_e('API Anahtarı:', 'ai-content-seo-assistant'); ?></label>
-                                <input type="password" id="openai_key" name="ai_seo_assistant_options[openai_key]" value="<?php echo esc_attr($opts['openai_key'] ?? ''); ?>" class="regular-text" placeholder="sk-proj-..." />
+                                <input type="text" id="openai_key" name="ai_seo_assistant_options[openai_key]" value="<?php echo esc_attr($opts['openai_key'] ?? ''); ?>" class="regular-text" placeholder="sk-proj-..." autocomplete="off" spellcheck="false" style="font-family:monospace; font-size:14px;" />
                             </div>
                             <div class="ai-field-group">
                                 <label for="openai_model"><?php esc_html_e('Model:', 'ai-content-seo-assistant'); ?></label>
@@ -398,15 +398,15 @@ class AI_SEO_Admin_Settings {
                             <p class="description"><?php esc_html_e('Anthropic veya OpenAI uyumlu herhangi bir özel API endpoint\'i girin.', 'ai-content-seo-assistant'); ?></p>
                             <div class="ai-field-group">
                                 <label for="custom_base_url"><?php esc_html_e('Base URL:', 'ai-content-seo-assistant'); ?></label>
-                                <input type="text" id="custom_base_url" name="ai_seo_assistant_options[custom_base_url]" value="<?php echo esc_attr($opts['custom_base_url'] ?? ''); ?>" class="regular-text" placeholder="https://api.z.ai/api/anthropic veya http://localhost:11434" />
+                                <input type="text" id="custom_base_url" name="ai_seo_assistant_options[custom_base_url]" value="<?php echo esc_attr($opts['custom_base_url'] ?? ''); ?>" class="regular-text" placeholder="https://api.z.ai/api/anthropic veya http://localhost:11434" autocomplete="off" />
                             </div>
                             <div class="ai-field-group">
                                 <label for="custom_key"><?php esc_html_e('API Anahtarı:', 'ai-content-seo-assistant'); ?></label>
-                                <input type="password" id="custom_key" name="ai_seo_assistant_options[custom_key]" value="<?php echo esc_attr($opts['custom_key'] ?? ''); ?>" class="regular-text" />
+                                <input type="text" id="custom_key" name="ai_seo_assistant_options[custom_key]" value="<?php echo esc_attr($opts['custom_key'] ?? ''); ?>" class="regular-text" autocomplete="off" spellcheck="false" style="font-family:monospace; font-size:14px;" />
                             </div>
                             <div class="ai-field-group">
                                 <label for="custom_model"><?php esc_html_e('Model İsmi:', 'ai-content-seo-assistant'); ?></label>
-                                <input type="text" id="custom_model" name="ai_seo_assistant_options[custom_model]" value="<?php echo esc_attr($opts['custom_model'] ?? ''); ?>" class="regular-text" placeholder="glm-4.7-flash, MiniMax-M2.7 vb." />
+                                <input type="text" id="custom_model" name="ai_seo_assistant_options[custom_model]" value="<?php echo esc_attr($opts['custom_model'] ?? ''); ?>" class="regular-text" placeholder="glm-4.7-flash, MiniMax-M2.7 vb." autocomplete="off" />
                             </div>
                             <button type="button" class="button ai-test-api-btn" data-provider="custom"><?php esc_html_e('Bağlantıyı Test Et', 'ai-content-seo-assistant'); ?></button>
                             <span class="ai-test-status"></span>
