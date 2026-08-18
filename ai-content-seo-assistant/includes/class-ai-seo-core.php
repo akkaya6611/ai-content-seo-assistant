@@ -59,7 +59,10 @@ class AI_SEO_Core {
      */
     public function enqueue_admin_assets($hook) {
         // 1. Ayarlar Sayfası Asset'leri
-        if ($hook === 'toplevel_page_ai-content-seo-assistant' || strpos($hook, 'ai-content-seo-assistant') !== false) {
+        $is_ai_page = (strpos($hook, 'ai-content-seo-assistant') !== false) || 
+                      (isset($_GET['page']) && strpos(sanitize_text_field($_GET['page']), 'ai-content-seo-assistant') !== false);
+
+        if ($is_ai_page) {
             wp_enqueue_style(
                 'ai-seo-admin-style',
                 AI_SEO_PLUGIN_URL . 'assets/css/admin-style.css',
