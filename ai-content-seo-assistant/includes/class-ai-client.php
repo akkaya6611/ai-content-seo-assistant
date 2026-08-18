@@ -37,13 +37,72 @@ class AI_SEO_Client {
             );
         }
 
-        $provider = !empty($custom_opts['provider']) ? sanitize_text_field($custom_opts['provider']) : ($this->options['default_provider'] ?? 'openrouter');
+        $primary_provider = !empty($custom_opts['provider']) ? sanitize_text_field($custom_opts['provider']) : ($this->options['default_provider'] ?? 'gemini');
         $temperature = isset($custom_opts['temperature']) ? floatval($custom_opts['temperature']) : floatval($this->options['temperature'] ?? 0.7);
         $max_tokens = isset($custom_opts['max_tokens']) ? intval($custom_opts['max_tokens']) : intval($this->options['max_tokens'] ?? 2000);
         $override_key = !empty($custom_opts['key']) ? trim($custom_opts['key']) : null;
         $override_model = !empty($custom_opts['model']) ? trim($custom_opts['model']) : null;
         $override_base_url = !empty($custom_opts['base_url']) ? trim($custom_opts['base_url']) : null;
 
+        // Test araması ise sadece o sağlayıcıyı tek başına dene
+        if ($is_test) {
+            return $this->execute_provider_call($primary_provider, $prompt, $system_prompt, $override_model, $override_key, $override_base_url, $temperature, $max_tokens);
+        }
+
+        // 1. Birincil Seçilen Sağlayıcıyı Çağır
+        $res = $this->execute_provider_call($primary_provider, $prompt, $system_prompt, $override_model, $override_key, $override_base_url, $temperature, $max_tokens);
+        if ($res['success']) {
+            return $res;
+        }
+
+        // Eğer limit dolduysa (429, quota, rate limit, limit vb.) veya servis hatası varsa:
+        // Diğer tanımlı API anahtarlarına sahip sağlayıcıları sırayla otomatik devreye sok!
+        $all_providers = array('gemini', 'groq', 'openrouter', 'deepseek', 'openai', 'anthropic', 'custom');
+        foreach ($all_providers as $fallback_provider) {
+            if ($fallback_provider === $primary_provider) {
+                continue;
+            }
+
+            // Eğer bu sağlayıcının API anahtarı girilmişse otomatik dene
+            if ($this->has_api_key_configured($fallback_provider)) {
+                $fb_res = $this->execute_provider_call($fallback_provider, $prompt, $system_prompt, null, null, null, $temperature, $max_tokens);
+                if ($fb_res['success']) {
+                    return $fb_res;
+                }
+            }
+        }
+
+        return $res;
+    }
+
+    /**
+     * Sağlayıcının API Anahtarı Tanımlı mı?
+     */
+    private function has_api_key_configured($provider) {
+        switch ($provider) {
+            case 'gemini':
+                return !empty(trim($this->options['gemini_key'] ?? ''));
+            case 'groq':
+                return !empty(trim($this->options['groq_key'] ?? ''));
+            case 'deepseek':
+                return !empty(trim($this->options['deepseek_key'] ?? ''));
+            case 'openrouter':
+                return !empty(trim($this->options['openrouter_key'] ?? ''));
+            case 'openai':
+                return !empty(trim($this->options['openai_key'] ?? ''));
+            case 'anthropic':
+                return !empty(trim($this->options['anthropic_key'] ?? ''));
+            case 'custom':
+                return !empty(trim($this->options['custom_key'] ?? ''));
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Belirtilen Sağlayıcıyı Çağır
+     */
+    private function execute_provider_call($provider, $prompt, $system_prompt, $override_model, $override_key, $override_base_url, $temperature, $max_tokens) {
         switch ($provider) {
             case 'groq':
                 return $this->call_groq($prompt, $system_prompt, $override_model, $override_key, $temperature, $max_tokens);
