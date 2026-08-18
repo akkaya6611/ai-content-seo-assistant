@@ -103,7 +103,7 @@
         });
 
         // Check for Updates Now
-        $('#ai-btn-check-updates-now').on('click', function(e) {
+        $(document).on('click', '#ai-btn-check-updates-now', function(e) {
             e.preventDefault();
 
             var $btn = $(this);
@@ -111,7 +111,7 @@
 
             $btn.prop('disabled', true);
             $btn.find('.ai-spin-icon').show();
-            $status.removeClass('success error').css('color', '#646970').text('Güncelleme sunucusu kontrol ediliyor...');
+            $status.removeClass('success error').css('color', '#646970').text('Güncelleme sunucusu kontrol ediliyor, lütfen bekleyin...');
 
             $.ajax({
                 url: aiSeoSettings.ajaxUrl,
@@ -125,7 +125,7 @@
                     $btn.find('.ai-spin-icon').hide();
                     if (res.success) {
                         if (res.data.has_update) {
-                            $status.css('color', '#1e7e34').html(res.data.message + ' <a href="' + res.data.plugins_url + '" class="button button-primary" style="margin-left:10px;">Eklentiler Sayfasına Git &rarr;</a>');
+                            $status.css('color', '#1e7e34').html(res.data.message + '<br><br><a href="' + res.data.plugins_url + '" class="button button-primary" style="margin-top:5px; font-weight:600;">Eklentiler Sayfasına Git & Şimdi Güncelle &rarr;</a>');
                         } else {
                             $status.css('color', '#1e7e34').text(res.data.message);
                         }
@@ -133,10 +133,10 @@
                         $status.css('color', '#d63638').text(res.data.message || aiSeoSettings.strings.error);
                     }
                 },
-                error: function() {
+                error: function(xhr) {
                     $btn.prop('disabled', false);
                     $btn.find('.ai-spin-icon').hide();
-                    $status.css('color', '#d63638').text(aiSeoSettings.strings.error);
+                    $status.css('color', '#d63638').text(aiSeoSettings.strings.error + ' (HTTP ' + xhr.status + ')');
                 }
             });
         });
