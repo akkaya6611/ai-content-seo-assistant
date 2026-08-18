@@ -160,7 +160,6 @@ class AI_SEO_Cron_Autopilot {
         if ($desc_res['success']) {
             $meta_desc = $this->clean_meta_desc($desc_res['content']);
         }
-        }
 
         // 4. WordPress Yazısı Olarak Kaydet
         $post_data = array(
