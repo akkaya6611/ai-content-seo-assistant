@@ -78,7 +78,7 @@ class AI_SEO_Client {
             return array('success' => false, 'error' => __('Groq API anahtarı girilmemiş. Lütfen eklenti ayarlarını kontrol edin.', 'ai-content-seo-assistant'));
         }
 
-        $model = $model ?: ($this->options['groq_model'] ?? 'llama-3.1-8b-instant');
+        $model = $model ?: ($this->options['groq_model'] ?? 'llama-3.3-70b-versatile');
         $messages = array();
         if (!empty($system_prompt)) {
             $messages[] = array('role' => 'system', 'content' => $system_prompt);
@@ -98,14 +98,23 @@ class AI_SEO_Client {
             return $json['choices'][0]['message']['content'] ?? '';
         });
 
-        // Eğer seçilen model Groq'ta 404 dönerse, her hesapta açık olan llama-3.1-8b-instant ile otomatik tekrar dene
-        if (!$res['success'] && (strpos($res['error'], '404') !== false || strpos($res['error'], 'does not exist') !== false) && $model !== 'llama-3.1-8b-instant') {
-            $body['model'] = 'llama-3.1-8b-instant';
-            $res = $this->post_json('https://api.groq.com/openai/v1/chat/completions', array(
-                'Authorization' => 'Bearer ' . $api_key,
-            ), $body, function($json) {
-                return $json['choices'][0]['message']['content'] ?? '';
-            });
+        // Eğer seçilen model Groq'ta 404 dönerse, sırasıyla alternatif modeller ile otomatik tekrar dene
+        if (!$res['success'] && (strpos($res['error'], '404') !== false || strpos($res['error'], 'does not exist') !== false || strpos($res['error'], 'not found') !== false)) {
+            $fallbacks = array('llama-3.3-70b-versatile', 'llama3-70b-8192', 'llama3-8b-8192');
+            foreach ($fallbacks as $fb_model) {
+                if ($fb_model === $model) {
+                    continue;
+                }
+                $body['model'] = $fb_model;
+                $res = $this->post_json('https://api.groq.com/openai/v1/chat/completions', array(
+                    'Authorization' => 'Bearer ' . $api_key,
+                ), $body, function($json) {
+                    return $json['choices'][0]['message']['content'] ?? '';
+                });
+                if ($res['success']) {
+                    break;
+                }
+            }
         }
 
         return $res;
