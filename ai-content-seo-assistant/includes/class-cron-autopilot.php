@@ -75,6 +75,12 @@ class AI_SEO_Cron_Autopilot {
      * @return array Sonuç raporu
      */
     public function execute_autopilot_generation($is_manual = false) {
+        // Lisans Kontrolü
+        if (class_exists('AI_SEO_License_Manager') && !AI_SEO_License_Manager::is_licensed()) {
+            $this->log_autopilot_result(__('Otomatik pilot çalıştırılamadı: Eklenti lisansı etkin değil (misteknoloji360.com.tr).', 'ai-content-seo-assistant'), 'error');
+            return array('success' => false, 'message' => __('Eklenti lisansı etkin değil. Lütfen lisans anahtarınızı etkinleştirin.', 'ai-content-seo-assistant'));
+        }
+
         $this->options = get_option('ai_seo_assistant_options', array());
 
         if (!$is_manual && empty($this->options['autopilot_enabled'])) {
