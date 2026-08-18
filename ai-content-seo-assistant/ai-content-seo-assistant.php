@@ -3,7 +3,7 @@
  * Plugin Name:       AI Content & SEO Assistant
  * Plugin URI:        https://misteknoloji360.com.tr/
  * Description:       Yapay zeka destekli otomatik içerik üretimi, zamanlanmış günlük makale yayınlayıcı (Cron), canlı SERP önizlemeli SEO meta etiketleri, Schema.org JSON-LD yapısal veri ve Lisanslama motoru. Groq, Gemini, DeepSeek, OpenRouter, Claude ve OpenAI destekler.
- * Version:           1.2.6
+ * Version:           1.2.7
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Serkan AKKAYA
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Sabit tanımlamaları
-define('AI_SEO_VERSION', '1.2.6');
+define('AI_SEO_VERSION', '1.2.7');
 define('AI_SEO_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('AI_SEO_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('AI_SEO_PLUGIN_BASENAME', plugin_basename(__FILE__));
