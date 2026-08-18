@@ -28,6 +28,15 @@ class AI_SEO_Client {
      * @return array                ['success' => bool, 'content' => string, 'error' => string]
      */
     public function generate($prompt, $system_prompt = '', $custom_opts = array()) {
+        // Lisans Kontrolü (Test aramaları hariç)
+        $is_test = !empty($custom_opts['is_test']);
+        if (!$is_test && class_exists('AI_SEO_License_Manager') && !AI_SEO_License_Manager::is_licensed()) {
+            return array(
+                'success' => false,
+                'error'   => __('Eklenti lisansı etkin değil! Lütfen Ayarlar > AI SEO Asistanı > 🔑 Lisans sekmesinden geçerli bir lisans anahtarı girin (misteknoloji360.com.tr).', 'ai-content-seo-assistant'),
+            );
+        }
+
         $provider = !empty($custom_opts['provider']) ? sanitize_text_field($custom_opts['provider']) : ($this->options['default_provider'] ?? 'openrouter');
         $temperature = isset($custom_opts['temperature']) ? floatval($custom_opts['temperature']) : floatval($this->options['temperature'] ?? 0.7);
         $max_tokens = isset($custom_opts['max_tokens']) ? intval($custom_opts['max_tokens']) : intval($this->options['max_tokens'] ?? 2000);
