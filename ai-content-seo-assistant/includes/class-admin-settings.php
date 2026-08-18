@@ -486,7 +486,7 @@ class AI_SEO_Admin_Settings {
                             <td>
                                 <select name="ai_seo_assistant_options[autopilot_provider]" id="autopilot_provider" class="regular-text">
                                     <option value="groq" <?php selected($opts['autopilot_provider'] ?? '', 'groq'); ?>>Groq (Llama 3.3 70B & DeepSeek R1 - Ultra Hızlı)</option>
-                                    <option value="gemini" <?php selected($opts['autopilot_provider'] ?? 'gemini', 'gemini'); ?>>Google Gemini (gemini-2.5-flash - Çok Hızlı & Ücretsiz Kotası Yüksek)</option>
+                                    <option value="gemini" <?php selected($opts['autopilot_provider'] ?? 'gemini', 'gemini'); ?>>Google Gemini (gemini-3.6-flash / 2.5-flash - Hızlı & Güçlü)</option>
                                     <option value="deepseek" <?php selected($opts['autopilot_provider'] ?? '', 'deepseek'); ?>>DeepSeek (deepseek-chat V3 - Ekonomik & Zeki)</option>
                                     <option value="openrouter" <?php selected($opts['autopilot_provider'] ?? '', 'openrouter'); ?>>OpenRouter (Gemini 2.0 / Llama 3.3 / Qwen)</option>
                                     <option value="anthropic" <?php selected($opts['autopilot_provider'] ?? '', 'anthropic'); ?>>Anthropic Claude (3.7 Sonnet / 3.5 Haiku)</option>
