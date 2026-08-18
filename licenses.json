@@ -1,0 +1,14 @@
+[
+  {
+    "key": "MIS-PRO-B593-945E",
+    "customer": "Ratemo Mobilya",
+    "domain": "ratemomobilya.com.tr",
+    "type": "PRO Lifetime",
+    "status": "active",
+    "created_at": "2026-08-18 14:12:00",
+    "last_check": "2026-08-18 14:20:00",
+    "version": "1.1.7",
+    "wp_version": "6.7",
+    "php_version": "7.4"
+  }
+]
