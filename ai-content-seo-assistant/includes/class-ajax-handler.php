@@ -78,33 +78,34 @@ class AI_SEO_Ajax_Handler {
             wp_send_json_error(array('message' => __('Lütfen bir konu veya başlık girin.', 'ai-content-seo-assistant')));
         }
 
-        $system_prompt = "Sen uzman bir SEO içerik yazarı ve Türkçe metin editörüsün. WordPress için yüksek kaliteli, okunabilirliği yüksek, SEO uyumlu ve zengin içerikler üretiyorsun. Yanıtını doğrudan HTML biçiminde (<h2>, <h3>, <p>, <ul>, <li>, <strong> etiketleriyle) oluştur. Kod blokları veya markdown backtick (```html) ekleme, doğrudan saf HTML metni döndür. Dil: " . $language . ".";
+        $system_prompt = "Sen Google SEO, içerik pazarlaması ve profesyonel Türkçe blog yazımı konusunda uzman bir baş editörsün.\n\nKURALLAR:\n1. Yanıtını DOĞRUDAN saf HTML biçiminde (<h2>, <h3>, <p>, <ul>, <li>, <strong>, <blockquote>) oluştur.\n2. Kod blokları veya markdown backtick (```html) ASLA ekleme.\n3. Girişte okuyucuyu kancalayan (Hook) merak uyandırıcı bir giriş yap.\n4. Alt başlıklar (H2, H3) ve maddeli listelerle zenginleştir.\n5. Asla robotik kalıplar kullanma; doğal, akıcı, ikna edici ve profesyonel Türkçe (" . $language . ") yaz.\n6. Selamlama veya açıklama yazma, doğrudan içeriği döndür.";
 
         $user_prompt = "";
         switch ($type) {
             case 'titles':
-                $user_prompt = "Konu: '{$topic}'. Odak anahtar kelimeler: '{$keywords}'. Tıklama oranı (CTR) yüksek, merak uyandıran ve Google aramalarında öne çıkacak 5 farklı başlık önerisi yaz. Başlıkları numaralandırılmış liste olarak ver.";
+                $system_prompt = "Sen Google arama motoru (SERP) ve yüksek tıklama oranı (CTR) uzmanısın. Kullanıcıların Google'da en çok tıkladığı, doğal, merak uyandıran ve profesyonel başlıklar üretirsin. Sadece başlıkları döndür, selamlama veya açıklama ASLA yazma.";
+                $user_prompt = "Konu: '{$topic}'. Odak Anahtar Kelimeler: '{$keywords}'.\n\nBu konu hakkında Google aramalarında en çok tıklanacak 5 adet özgün ve dikkat çekici Türkçe blog başlığı önerisi yaz.\n\nKurallar:\n- Uzunlukları 45-65 karakter arasında olsun.\n- Liste halinde (1., 2., 3., 4., 5.) olarak sadece başlıkları yaz.";
                 break;
 
             case 'outline':
-                $user_prompt = "Konu: '{$topic}'. Anahtar Kelimeler: '{$keywords}'. Bu konu için H2 ve H3 başlıklarını içeren kapsamlı, mantıksal akışa sahip bir makale taslağı (outline) hazırla.";
+                $user_prompt = "Konu: '{$topic}'. Anahtar Kelimeler: '{$keywords}'. Bu konu için H2 ve H3 başlıklarını içeren, mantıksal akışa sahip, eksiksiz bir makale taslağı (outline) ve planı hazırla.";
                 break;
 
             case 'intro':
-                $user_prompt = "Konu: '{$topic}'. Anahtar Kelimeler: '{$keywords}'. Yazım Tonu: '{$tone}'. Okuyucunun dikkatini ilk 5 saniyede çekecek, problemi ve sunulacak çözümü özetleyen etkileyici 2-3 paragraflık bir giriş bölümü yaz.";
+                $user_prompt = "Konu: '{$topic}'. Anahtar Kelimeler: '{$keywords}'. Yazım Tonu: '{$tone}'. Okuyucunun dikkatini ilk 5 saniyede çekecek, problemi ve sunulacak çözümü özetleyen etkileyici 2-3 paragraflık bir giriş bölümü (kanca) yaz.";
                 break;
 
             case 'conclusion':
-                $user_prompt = "Konu: '{$topic}'. Anahtar Kelimeler: '{$keywords}'. Yazım Tonu: '{$tone}'. Makaleyi güçlü bir şekilde özetleyen ve okuyucuyu yorum yapmaya veya harekete geçmeye yönlendiren (Call to action) bir sonuç bölümü yaz.";
+                $user_prompt = "Konu: '{$topic}'. Anahtar Kelimeler: '{$keywords}'. Yazım Tonu: '{$tone}'. Makaleyi güçlü bir şekilde özetleyen ve okuyucuyu yorum yapmaya veya harekete geçmeye yönlendiren (Call to Action) bir sonuç bölümü yaz.";
                 break;
 
             case 'faq':
-                $user_prompt = "Konu: '{$topic}'. Bu konu hakkında kullanıcıların Google'da en çok arattığı 4-5 sıkça sorulan soruyu (SSS / FAQ) belirle ve her birine net, anlaşılır yanıtlar yaz. H3 soru başlıkları ve paragraflar kullan.";
+                $user_prompt = "Konu: '{$topic}'. Bu konu hakkında kullanıcıların Google'da en çok arattığı 4-5 sıkça sorulan soruyu (SSS / FAQ) belirle ve her birine net, anlaşılır ve güven verici yanıtlar yaz. H3 soru başlıkları ve paragraflar kullan.";
                 break;
 
             case 'article':
             default:
-                $user_prompt = "Konu: '{$topic}'. Anahtar Kelimeler: '{$keywords}'. Yazım Tonu: '{$tone}'. Bu konu hakkında baştan sona kapsamlı, detaylı, alt başlıklara ayrılmış (H2, H3), listeler içeren, SEO odaklı tam bir blog makalesi yaz.";
+                $user_prompt = "Konu Başlığı: '{$topic}'.\nOdak Anahtar Kelimeler: '{$keywords}'.\nYazım Tonu: '{$tone}'.\n\nBu konu hakkında baştan sona kapsamlı, detaylı, alt başlıklara ayrılmış (H2, H3), maddeli listeler ve kullanım ipuçları içeren, SEO odaklı tam bir blog makalesi yaz.";
                 break;
         }
 
@@ -197,12 +198,12 @@ class AI_SEO_Ajax_Handler {
         $keyword = sanitize_text_field($_POST['keyword'] ?? '');
         $provider = sanitize_text_field($_POST['provider'] ?? '');
 
-        $system_prompt = "Sen bir Google SEO ve SERP CTR uzmanısın. Sadece istenen tek bir sonucu döndür. Tırnak işareti, prefix veya açıklama yazma.";
+        $system_prompt = "Sen bir Google SERP ve Tıklama Oranı (CTR) uzmanısın. SADECE tek bir nihai metin döndür. Tırnak işareti, 'Başlık:', 'Açıklama:' gibi etiketler veya konuşma cümleleri ASLA ekleme.";
 
         if ($field === 'title') {
-            $user_prompt = "Aşağıdaki yazı için Google arama sonuçlarında yüksek tıklama oranı (CTR) alacak, en fazla 55-60 karakter uzunluğunda, odak anahtar kelimeyi ('{$keyword}') içeren tek bir SEO meta başlığı yaz.\nYazı Başlığı: {$post_title}\nİçerik Özeti: " . substr($post_content, 0, 300);
+            $user_prompt = "Aşağıdaki içerik için Google arama sonuçlarında (SERP) en yüksek tıklamayı alacak profesyonel ve doğal tek bir SEO Meta Başlığı yaz.\n\nİçerik Başlığı: {$post_title}\nOdak Anahtar Kelime: {$keyword}\nÖzet: " . substr($post_content, 0, 300) . "\n\nKurallar:\n- Uzunluk kesinlikle 45 ile 60 karakter arasında olmalı (Google'da kesilmemeli).\n- Odak anahtar kelimeyi başlığın içine doğal şekilde yerleştir.\n- Sadece saf başlık metnini döndür.";
         } else {
-            $user_prompt = "Aşağıdaki yazı için Google arama sonuçlarında görünecek, 130-155 karakter uzunluğunda, merak uyandıran, odak anahtar kelimeyi ('{$keyword}') içeren ve harekete geçiren (CTA) tek bir SEO meta açıklaması yaz.\nYazı Başlığı: {$post_title}\nİçerik Özeti: " . substr($post_content, 0, 500);
+            $user_prompt = "Aşağıdaki içerik için Google arama sonuçlarında gösterilecek yüksek CTR odaklı tek bir Meta Açıklaması (Meta Description) yaz.\n\nİçerik Başlığı: {$post_title}\nOdak Anahtar Kelime: {$keyword}\nÖzet: " . substr($post_content, 0, 500) . "\n\nKurallar:\n- Uzunluk kesinlikle 130 ile 155 karakter arasında olmalı.\n- Okuyucuyu tıklamaya teşvik eden (CTA) güçlü bir eylem cümlesi içermeli.\n- Sadece saf açıklama metnini döndür.";
         }
 
         $opts = array('max_tokens' => 200, 'temperature' => 0.5);
@@ -213,11 +214,14 @@ class AI_SEO_Ajax_Handler {
         $response = $this->ai_client->generate($user_prompt, $system_prompt, $opts);
 
         if ($response['success']) {
-            $clean_result = sanitize_text_field(trim($response['content'], "\"'\n\r "));
-            wp_send_json_success(array('result' => $clean_result));
+            $clean_result = trim(wp_strip_all_tags($response['content']), "\"'\n\r#* ");
+            $clean_result = preg_replace('/^(başlık|seo başlığı|title|açıklama|meta açıklama|description)\s*:\s*/iu', '', $clean_result);
+            $clean_result = trim($clean_result, "\"'\n\r#* ");
+            wp_send_json_success(array('result' => sanitize_text_field($clean_result)));
         } else {
             wp_send_json_error(array('message' => sanitize_text_field($response['error'])));
         }
+    }
     }
 
     /**
