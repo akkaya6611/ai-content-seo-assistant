@@ -71,12 +71,15 @@ class AI_SEO_Plugin_Updater {
             return $cached;
         }
 
-        $response = wp_remote_get($this->update_url, array(
+        $request_url = add_query_arg('t', time(), $this->update_url);
+        $response = wp_remote_get($request_url, array(
             'timeout'   => 15,
             'sslverify' => apply_filters('ai_seo_sslverify', true),
             'headers'   => array(
-                'Accept'     => 'application/json',
-                'User-Agent' => 'WordPress/' . get_bloginfo('version') . '; ' . home_url(),
+                'Accept'        => 'application/json',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma'        => 'no-cache',
+                'User-Agent'    => 'WordPress/' . get_bloginfo('version') . '; ' . home_url(),
             ),
         ));
 
