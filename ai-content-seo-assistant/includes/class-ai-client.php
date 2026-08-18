@@ -243,9 +243,9 @@ class AI_SEO_Client {
 
         $res = $this->post_json($url, array(), $body, $gemini_extractor);
 
-        // Eğer 404/400 (model bulunamadı veya no longer available) dönerse, gemini-3.6-flash ve gemini-2.5-flash ile otomatik tekrar dene
+        // Eğer 404/400 (model bulunamadı veya no longer available) dönerse, sırayla güncel aktif modellerle otomatik tekrar dene
         if (!$res['success'] && (strpos($res['error'], '404') !== false || strpos($res['error'], '400') !== false || strpos($res['error'], 'not found') !== false || strpos($res['error'], 'no longer available') !== false)) {
-            $fallbacks = array('gemini-3.6-flash', 'gemini-2.5-flash', 'gemini-2.5-pro');
+            $fallbacks = array('gemini-3.6-flash', 'gemini-3.1-pro-preview', 'gemini-2.5-flash');
             foreach ($fallbacks as $fb) {
                 if ($fb === $model) continue;
                 $fallback_url = 'https://generativelanguage.googleapis.com/v1beta/models/' . urlencode($fb) . ':generateContent?key=' . urlencode($api_key);
