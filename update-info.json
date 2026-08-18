@@ -1,7 +1,7 @@
 {
   "name": "AI Content & SEO Assistant",
   "slug": "ai-content-seo-assistant",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "author": "<a href=\"https://misteknoloji360.com.tr/\">Serkan AKKAYA</a>",
   "homepage": "https://misteknoloji360.com.tr/",
   "download_url": "https://raw.githubusercontent.com/akkaya6611/ai-content-seo-assistant/main/ai-content-seo-assistant.zip",
@@ -11,6 +11,6 @@
   "last_updated": "2026-08-18",
   "sections": {
     "description": "Yapay zeka destekli otomatik içerik üretimi, günlük zamanlanmış makale yayınlayıcı (Cron), canlı SERP önizlemeli SEO meta etiketleri, Schema.org JSON-LD yapısal veri motoru ve Lisans & Aktivasyon koruma sistemi. Groq, Google Gemini, DeepSeek, OpenRouter, Claude ve OpenAI destekler.",
-    "changelog": "<h4>1.0.6 (Modern SaaS Tasarımı & Lisans Ekranı Yenilemesi)</h4><ul><li>💎 Yönetim paneli ve lisans ekranı modern, kurumsal SaaS arayüzü ile baştan tasarlandı.</li><li>🛡️ Lisans kutusu genişletildi, alt bilgi çakışması giderildi, tek tıkla Master Key doldurma butonu eklendi.</li><li>✨ Menü sekmeleri ve kartlar modern gölgeler ve şık renk paleti ile yenilendi.</li><li>👨‍💻 Geliştirici: Serkan AKKAYA (misteknoloji360.com.tr)</li></ul>"
+    "changelog": "<h4>1.0.7 (API İletişim Güçlendirmesi & Otomatik Hata İyileştirme)</h4><ul><li>⚡ API bağlantı testlerindeki lisans ön-kontrol engeli kaldırıldı (lisanssız iken de test edilebilir).</li><li>🌐 Hosting SSL ve cURL sertifika uyumsuzluklarına karşı otomatik direnç ve yeniden deneme katmanı eklendi.</li><li>🔄 Gemini ve Groq modelleri için akıllı otomatik alternatif model yönlendiricisi güncellendi.</li><li>👨‍💻 Geliştirici: Serkan AKKAYA (misteknoloji360.com.tr)</li></ul>"
   }
 }
