@@ -49,7 +49,7 @@ class AI_SEO_Admin_Settings {
             __('⚡ Otomatik Pilot (Cron)', 'ai-content-seo-assistant'),
             __('⚡ Otomatik Pilot', 'ai-content-seo-assistant'),
             'manage_options',
-            'admin.php?page=ai-content-seo-assistant#tab-autopilot',
+            'ai-content-seo-assistant-autopilot',
             array($this, 'render_settings_page')
         );
 
@@ -58,7 +58,7 @@ class AI_SEO_Admin_Settings {
             __('🔑 Lisans & Aktivasyon', 'ai-content-seo-assistant'),
             __('🔑 Lisans & Aktivasyon', 'ai-content-seo-assistant'),
             'manage_options',
-            'admin.php?page=ai-content-seo-assistant#tab-license',
+            'ai-content-seo-assistant-license',
             array($this, 'render_settings_page')
         );
 
@@ -67,7 +67,7 @@ class AI_SEO_Admin_Settings {
             __('🔄 Otomatik Güncellemeler', 'ai-content-seo-assistant'),
             __('🔄 Güncellemeler', 'ai-content-seo-assistant'),
             'manage_options',
-            'admin.php?page=ai-content-seo-assistant#tab-updates',
+            'ai-content-seo-assistant-updates',
             array($this, 'render_settings_page')
         );
     }
@@ -157,6 +157,15 @@ class AI_SEO_Admin_Settings {
         }
 
         $opts = get_option('ai_seo_assistant_options', array());
+        $current_page = sanitize_text_field($_GET['page'] ?? 'ai-content-seo-assistant');
+        $active_tab = 'providers';
+        if ($current_page === 'ai-content-seo-assistant-autopilot') {
+            $active_tab = 'autopilot';
+        } elseif ($current_page === 'ai-content-seo-assistant-license') {
+            $active_tab = 'license';
+        } elseif ($current_page === 'ai-content-seo-assistant-updates') {
+            $active_tab = 'updates';
+        }
         ?>
         <div class="wrap ai-seo-admin-wrap">
             <div class="ai-seo-header">
@@ -173,22 +182,22 @@ class AI_SEO_Admin_Settings {
             <?php settings_errors(); ?>
 
             <nav class="nav-tab-wrapper ai-seo-nav-tabs">
-                <a href="#tab-providers" class="nav-tab nav-tab-active" data-tab="providers">
+                <a href="#tab-providers" class="nav-tab <?php echo ($active_tab === 'providers') ? 'nav-tab-active' : ''; ?>" data-tab="providers">
                     <span class="dashicons dashicons-cloud"></span> <?php esc_html_e('AI Sağlayıcıları & Anahtarlar', 'ai-content-seo-assistant'); ?>
                 </a>
-                <a href="#tab-autopilot" class="nav-tab" data-tab="autopilot">
+                <a href="#tab-autopilot" class="nav-tab <?php echo ($active_tab === 'autopilot') ? 'nav-tab-active' : ''; ?>" data-tab="autopilot">
                     <span class="dashicons dashicons-clock"></span> <?php esc_html_e('⚡ Otomatik Pilot (Cron)', 'ai-content-seo-assistant'); ?>
                 </a>
-                <a href="#tab-general" class="nav-tab" data-tab="general">
+                <a href="#tab-general" class="nav-tab <?php echo ($active_tab === 'general') ? 'nav-tab-active' : ''; ?>" data-tab="general">
                     <span class="dashicons dashicons-admin-generic"></span> <?php esc_html_e('İçerik & Model Ayarları', 'ai-content-seo-assistant'); ?>
                 </a>
-                <a href="#tab-seo" class="nav-tab" data-tab="seo">
+                <a href="#tab-seo" class="nav-tab <?php echo ($active_tab === 'seo') ? 'nav-tab-active' : ''; ?>" data-tab="seo">
                     <span class="dashicons dashicons-chart-bar"></span> <?php esc_html_e('SEO & Schema.org Ayarları', 'ai-content-seo-assistant'); ?>
                 </a>
-                <a href="#tab-updates" class="nav-tab" data-tab="updates">
+                <a href="#tab-updates" class="nav-tab <?php echo ($active_tab === 'updates') ? 'nav-tab-active' : ''; ?>" data-tab="updates">
                     <span class="dashicons dashicons-update"></span> <?php esc_html_e('🔄 Otomatik Güncelleme', 'ai-content-seo-assistant'); ?>
                 </a>
-                <a href="#tab-license" class="nav-tab" data-tab="license">
+                <a href="#tab-license" class="nav-tab <?php echo ($active_tab === 'license') ? 'nav-tab-active' : ''; ?>" data-tab="license">
                     <span class="dashicons dashicons-admin-network"></span> <?php esc_html_e('🔑 Lisans & Aktivasyon', 'ai-content-seo-assistant'); ?>
                 </a>
             </nav>
@@ -200,7 +209,7 @@ class AI_SEO_Admin_Settings {
                 <input type="hidden" name="ai_seo_assistant_options[_seo_tab_submitted]" value="1" />
 
                 <!-- 1. TAB: AI SAĞLAYICILARI -->
-                <div class="ai-seo-admin-tab-pane active" id="tab-pane-providers">
+                <div class="ai-seo-admin-tab-pane <?php echo ($active_tab === 'providers') ? 'active' : ''; ?>" id="tab-pane-providers" style="<?php echo ($active_tab === 'providers') ? 'display:block;' : 'display:none;'; ?>">
 
                         <!-- Varsayılan Sağlayıcı Seçimi -->
                         <div class="ai-seo-card ai-seo-card-primary">
@@ -394,7 +403,7 @@ class AI_SEO_Admin_Settings {
                 </div>
 
                 <!-- 2. TAB: OTOMATİK PİLOT (CRON İLE GÜNLÜK MAKALE) -->
-                <div class="ai-seo-admin-tab-pane" id="tab-pane-autopilot" style="display:none;">
+                <div class="ai-seo-admin-tab-pane <?php echo ($active_tab === 'autopilot') ? 'active' : ''; ?>" id="tab-pane-autopilot" style="<?php echo ($active_tab === 'autopilot') ? 'display:block;' : 'display:none;'; ?>">
                     
                     <div class="ai-seo-autopilot-banner">
                         <div class="ai-autopilot-info">
@@ -549,7 +558,7 @@ class AI_SEO_Admin_Settings {
                 </div>
 
                 <!-- 3. TAB: İÇERİK & MODEL AYARLARI -->
-                <div class="ai-seo-admin-tab-pane" id="tab-pane-general" style="display:none;">
+                <div class="ai-seo-admin-tab-pane <?php echo ($active_tab === 'general') ? 'active' : ''; ?>" id="tab-pane-general" style="<?php echo ($active_tab === 'general') ? 'display:block;' : 'display:none;'; ?>">
                     <table class="form-table ai-seo-form-table">
                         <tr>
                             <th scope="row"><label for="default_language"><?php esc_html_e('Varsayılan Üretim Dili', 'ai-content-seo-assistant'); ?></label></th>
@@ -560,16 +569,18 @@ class AI_SEO_Admin_Settings {
                                     <option value="de" <?php selected($opts['default_language'] ?? '', 'de'); ?>>Deutsch</option>
                                     <option value="es" <?php selected($opts['default_language'] ?? '', 'es'); ?>>Español</option>
                                     <option value="fr" <?php selected($opts['default_language'] ?? '', 'fr'); ?>>Français</option>
+                                    <option value="ar" <?php selected($opts['default_language'] ?? '', 'ar'); ?>>العربية (Arapça)</option>
+                                    <option value="ru" <?php selected($opts['default_language'] ?? '', 'ru'); ?>>Русский (Rusça)</option>
                                 </select>
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row"><label for="default_tone"><?php esc_html_e('Varsayılan Yazım Tonu', 'ai-content-seo-assistant'); ?></label></th>
+                            <th scope="row"><label for="default_tone"><?php esc_html_e('İçerik Yazım Tonu', 'ai-content-seo-assistant'); ?></label></th>
                             <td>
                                 <select name="ai_seo_assistant_options[default_tone]" id="default_tone" class="regular-text">
-                                    <option value="professional" <?php selected($opts['default_tone'] ?? '', 'professional'); ?>><?php esc_html_e('Profesyonel & Kurumsal', 'ai-content-seo-assistant'); ?></option>
+                                    <option value="professional" <?php selected($opts['default_tone'] ?? 'professional', 'professional'); ?>><?php esc_html_e('Profesyonel & Kurumsal (Önerilen)', 'ai-content-seo-assistant'); ?></option>
                                     <option value="friendly" <?php selected($opts['default_tone'] ?? '', 'friendly'); ?>><?php esc_html_e('Samimi & Akıcı', 'ai-content-seo-assistant'); ?></option>
-                                    <option value="academic" <?php selected($opts['default_tone'] ?? '', 'academic'); ?>><?php esc_html_e('Akademik & Bilgilendirici', 'ai-content-seo-assistant'); ?></option>
+                                    <option value="informative" <?php selected($opts['default_tone'] ?? '', 'informative'); ?>><?php esc_html_e('Bilgilendirici & Eğitici', 'ai-content-seo-assistant'); ?></option>
                                     <option value="persuasive" <?php selected($opts['default_tone'] ?? '', 'persuasive'); ?>><?php esc_html_e('Pazarlama & İkna Edici', 'ai-content-seo-assistant'); ?></option>
                                     <option value="creative" <?php selected($opts['default_tone'] ?? '', 'creative'); ?>><?php esc_html_e('Yaratıcı & Özgün', 'ai-content-seo-assistant'); ?></option>
                                 </select>
@@ -592,8 +603,8 @@ class AI_SEO_Admin_Settings {
                     </table>
                 </div>
 
-                <!-- 3. TAB: SEO & SCHEMA AYARLARI -->
-                <div class="ai-seo-admin-tab-pane" id="tab-pane-seo" style="display:none;">
+                <!-- 4. TAB: SEO & SCHEMA AYARLARI -->
+                <div class="ai-seo-admin-tab-pane <?php echo ($active_tab === 'seo') ? 'active' : ''; ?>" id="tab-pane-seo" style="<?php echo ($active_tab === 'seo') ? 'display:block;' : 'display:none;'; ?>">
                     <table class="form-table ai-seo-form-table">
                         <tr>
                             <th scope="row"><?php esc_html_e('Aktif Yazı Tipleri (Post Types)', 'ai-content-seo-assistant'); ?></th>
@@ -641,7 +652,7 @@ class AI_SEO_Admin_Settings {
                 </div>
 
                 <!-- 5. TAB: OTOMATİK GÜNCELLEME SİSTEMİ -->
-                <div class="ai-seo-admin-tab-pane" id="tab-pane-updates" style="display:none;">
+                <div class="ai-seo-admin-tab-pane <?php echo ($active_tab === 'updates') ? 'active' : ''; ?>" id="tab-pane-updates" style="<?php echo ($active_tab === 'updates') ? 'display:block;' : 'display:none;'; ?>">
                     <div class="ai-seo-card ai-seo-card-primary" style="margin-bottom:20px;">
                         <h3><span class="dashicons dashicons-cloud-saved"></span> <?php esc_html_e('Merkezi Otomatik Güncelleme Sistemi', 'ai-content-seo-assistant'); ?></h3>
                         <p style="font-size:14px; line-height:1.6; color:#3c434a;">
@@ -694,7 +705,7 @@ class AI_SEO_Admin_Settings {
                 </div>
 
                 <!-- 6. TAB: LİSANS VE AKTİVASYON -->
-                <div class="ai-seo-admin-tab-pane" id="tab-pane-license" style="display:none;">
+                <div class="ai-seo-admin-tab-pane <?php echo ($active_tab === 'license') ? 'active' : ''; ?>" id="tab-pane-license" style="<?php echo ($active_tab === 'license') ? 'display:block;' : 'display:none;'; ?>">
                     <?php
                     $lic_info = class_exists('AI_SEO_License_Manager') ? AI_SEO_License_Manager::get_license_info() : array('is_active' => false);
                     $is_active = !empty($lic_info['is_active']);
