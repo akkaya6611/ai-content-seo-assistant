@@ -150,6 +150,9 @@ class AI_SEO_Admin_Settings {
                 <a href="#tab-updates" class="nav-tab" data-tab="updates">
                     <span class="dashicons dashicons-update"></span> <?php esc_html_e('🔄 Otomatik Güncelleme', 'ai-content-seo-assistant'); ?>
                 </a>
+                <a href="#tab-license" class="nav-tab" data-tab="license">
+                    <span class="dashicons dashicons-admin-network"></span> <?php esc_html_e('🔑 Lisans & Aktivasyon', 'ai-content-seo-assistant'); ?>
+                </a>
             </nav>
 
             <form action="options.php" method="post" class="ai-seo-settings-form">
@@ -649,6 +652,87 @@ class AI_SEO_Admin_Settings {
                             <li>Yeni <code>ai-content-seo-assistant.zip</code> dosyasını ve <code>update-info.json</code> dosyasını GitHub reponuza (veya web sitenize) yükleyin.</li>
                             <li>Eklentinin kurulu olduğu diğer tüm 3-4 WordPress siteniz, arka planda yeni sürümü otomatik algılar ve WordPress'in standart <strong>"Eklentiler &rarr; Yeni bir sürüm mevcut. Şimdi Güncelle"</strong> butonunu açar!</li>
                         </ol>
+                    </div>
+                </div>
+
+                <!-- 6. TAB: LİSANS VE AKTİVASYON -->
+                <div class="ai-seo-admin-tab-pane" id="tab-pane-license" style="display:none;">
+                    <?php
+                    $lic_info = class_exists('AI_SEO_License_Manager') ? AI_SEO_License_Manager::get_license_info() : array('is_active' => false);
+                    $is_active = !empty($lic_info['is_active']);
+                    ?>
+                    <div class="ai-seo-card <?php echo $is_active ? 'ai-seo-card-primary' : ''; ?>" style="margin-bottom:20px; <?php echo !$is_active ? 'border-left:4px solid #d63638; background:#fff8f7;' : ''; ?>">
+                        <h3 style="margin-top:0;">
+                            <?php if ($is_active): ?>
+                                <span class="dashicons dashicons-yes-alt" style="color:#1e7e34; font-size:24px; vertical-align:text-bottom;"></span>
+                                <span style="color:#1e7e34;"><?php esc_html_e('Eklenti Lisansı Aktif & Doğrulandı', 'ai-content-seo-assistant'); ?></span>
+                            <?php else: ?>
+                                <span class="dashicons dashicons-warning" style="color:#d63638; font-size:24px; vertical-align:text-bottom;"></span>
+                                <span style="color:#d63638;"><?php esc_html_e('Eklenti Lisansı Etkin Değil', 'ai-content-seo-assistant'); ?></span>
+                            <?php endif; ?>
+                        </h3>
+                        <p style="font-size:14px; line-height:1.6; color:#3c434a; margin-bottom:0;">
+                            <?php if ($is_active): ?>
+                                <?php printf(esc_html__('Bu site (%s) için %s lisansı başarıyla etkinleştirildi. Tüm yapay zeka özellikleri ve otomatik pilot sınırsız kullanıma açıktır.', 'ai-content-seo-assistant'), '<strong>' . esc_html($lic_info['domain']) . '</strong>', '<strong>' . esc_html($lic_info['type']) . '</strong>'); ?>
+                            <?php else: ?>
+                                <?php esc_html_e('Yapay zeka içerik üretimi ve otomatik pilot özelliklerini kullanabilmek için lütfen misteknoloji360.com.tr tarafından sağlanan geçerli bir lisans anahtarı girin.', 'ai-content-seo-assistant'); ?>
+                            <?php endif; ?>
+                        </p>
+                    </div>
+
+                    <table class="form-table ai-seo-form-table">
+                        <tr>
+                            <th scope="row"><?php esc_html_e('Lisans Durumu', 'ai-content-seo-assistant'); ?></th>
+                            <td>
+                                <?php if ($is_active): ?>
+                                    <span class="ai-badge ai-badge-popular" style="background:#1e7e34; color:#fff; font-size:13px; padding:4px 10px;">🟢 <?php echo esc_html($lic_info['type']); ?></span>
+                                    <span style="margin-left:10px; color:#50575e; font-size:13px;">(Aktivasyon: <?php echo esc_html($lic_info['activated_at']); ?>)</span>
+                                <?php else: ?>
+                                    <span class="ai-badge" style="background:#d63638; color:#fff; font-size:13px; padding:4px 10px;">🔴 <?php esc_html_e('Lisanssız / Beklemede', 'ai-content-seo-assistant'); ?></span>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><?php esc_html_e('Lisanslı Alan Adı (Domain)', 'ai-content-seo-assistant'); ?></th>
+                            <td>
+                                <code><?php echo esc_html(AI_SEO_License_Manager::get_current_domain()); ?></code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><?php esc_html_e('Geliştirici & Üretici', 'ai-content-seo-assistant'); ?></th>
+                            <td>
+                                <strong>Serkan AKKAYA</strong> &mdash; <a href="https://misteknoloji360.com.tr/" target="_blank">misteknoloji360.com.tr &rarr;</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="ai_license_key_input"><?php esc_html_e('Lisans Anahtarı', 'ai-content-seo-assistant'); ?></label></th>
+                            <td>
+                                <input type="text" id="ai_license_key_input" class="regular-text" style="font-family:monospace; font-size:14px; letter-spacing:1px;" placeholder="MIS-PRO-XXXX-XXXX" value="<?php echo esc_attr($lic_info['key'] ?? ''); ?>" <?php echo $is_active ? 'readonly' : ''; ?> />
+                                
+                                <div style="margin-top:12px;">
+                                    <?php if (!$is_active): ?>
+                                        <button type="button" id="ai-btn-activate-license" class="button button-primary button-large">
+                                            <span class="dashicons dashicons-update ai-spin-icon" style="display:none; vertical-align:text-bottom; margin-right:4px;"></span>
+                                            <span class="dashicons dashicons-unlock"></span> <?php esc_html_e('Lisansı Şimdi Etkinleştir', 'ai-content-seo-assistant'); ?>
+                                        </button>
+                                    <?php else: ?>
+                                        <button type="button" id="ai-btn-deactivate-license" class="button button-secondary" style="color:#d63638;">
+                                            <span class="dashicons dashicons-update ai-spin-icon" style="display:none; vertical-align:text-bottom; margin-right:4px;"></span>
+                                            <span class="dashicons dashicons-trash"></span> <?php esc_html_e('Lisansı Bu Siteden Kaldır', 'ai-content-seo-assistant'); ?>
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+                                <div id="ai-license-ajax-status" style="margin-top:12px; font-weight:600; font-size:14px;"></div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div style="background:#fff; border:1px solid #c3c4c7; padding:15px 20px; border-radius:4px; margin-top:20px;">
+                        <h4 style="margin:0 0 8px 0; color:#1d2327;">🛡️ Geliştirici Master Lisans Anahtarları</h4>
+                        <p style="margin:0 0 10px 0; font-size:13px; color:#50575e;">
+                            Kendi siteleriniz veya test ortamlarınız için aşağıdaki Master Anahtarı doğrudan girebilirsiniz:
+                        </p>
+                        <code style="background:#f0f0f1; padding:6px 12px; font-size:14px; font-weight:bold; color:#135e96; border-radius:3px; display:inline-block;">MIS-MASTER-360-SERKAN-AKKAYA</code>
                     </div>
                 </div>
 
