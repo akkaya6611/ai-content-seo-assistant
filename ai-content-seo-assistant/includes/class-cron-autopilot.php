@@ -131,7 +131,7 @@ class AI_SEO_Cron_Autopilot {
         $category_id = intval($this->options['autopilot_category'] ?? 0);
 
         // 2. Makale İçeriğini Üret (Derinlemesine & SEO Odaklı)
-        $system_prompt = "Sen uzman bir SEO içerik yazarı ve Türkçe blog editörüsün. WordPress için Google aramalarında en üst sıralara çıkacak, okunabilirliği çok yüksek, zengin ve kaliteli içerikler üretiyorsun.\n\nKURALLAR:\n1. Yanıtını DOĞRUDAN saf HTML biçiminde (<h2>, <h3>, <p>, <ul>, <li>, <strong> etiketleriyle) oluştur.\n2. Kod blokları veya markdown backtick (```html) ASLA ekleme.\n3. H2 ve H3 başlıkları akıcı, ilgi çekici ve çözüm odaklı olsun.\n4. Madde imleri (<ul><li>) ve pratik ipuçları içersin.\n5. Makale sonunda 3-4 soruluk Sıkça Sorulan Sorular (FAQ) bölümü ekle.\n6. Dil: Kusursuz, akıcı ve profesyonel Türkçe (" . $language . ").";
+        $system_prompt = "Sen Google SEO, içerik stratejisi ve profesyonel Türkçe blog yazımı konusunda uzman bir baş editörsün.\n\nKESİN KURALLAR:\n1. KESİNLİKLE düşünce süreci (thinking process, chain of thought, analyze input vb.) YAZMA.\n2. KESİNLİKLE İngilizce kelime, parantez içi İngilizce çeviri veya ek açıklama EKLEME.\n3. KESİNLİKLE 'Here is...', 'Sure', 'Tabii ki' gibi giriş cümleleri YAZMA.\n4. Yanıtını DOĞRUDAN saf HTML biçiminde (<h2>, <h3>, <p>, <ul>, <li>, <strong> etiketleriyle) oluştur.\n5. Kod blokları veya markdown backtick (```html) ASLA ekleme.\n6. H2 ve H3 başlıkları akıcı, ilgi çekici ve çözüm odaklı olsun.\n7. Madde imleri (<ul><li>), önemli ipuçları ve en altta 3-4 soruluk Sıkça Sorulan Sorular (FAQ) bölümü ekle.\n8. Dil: %100 kusursuz, akıcı ve profesyonel Türkçe (" . $language . ").";
         
         $article_prompt = "Konu Başlığı: '{$current_topic}'.\nYazım Tonu: '{$tone}'.\n\nBu konu hakkında baştan sona kapsamlı, detaylı, alt başlıklara ayrılmış (H2, H3), listeler, pratik kullanım ipuçları ve SSS bölümü içeren, SEO odaklı tam bir blog makalesi yaz.";
 
@@ -158,7 +158,7 @@ class AI_SEO_Cron_Autopilot {
 
         // 3. SEO Meta Başlığı ve Açıklamasını Üret
         $meta_title = $this->clean_title_text($current_topic);
-        $title_res = $this->ai_client->generate("Konu: '{$current_topic}'. Bu içerik için Google arama sonuçlarında en yüksek tıklama oranını (CTR) alacak 50-60 karakterlik tek bir SEO başlığı yaz. Sadece başlığı döndür, tırnak veya ek açıklama yazma.", '', array('provider' => $provider, 'max_tokens' => 80, 'temperature' => 0.5));
+        $title_res = $this->ai_client->generate("Konu: '{$current_topic}'. Bu içerik için Google arama sonuçlarında en yüksek tıklama oranını (CTR) alacak 50-60 karakterlik tek bir SEO başlığı yaz. Sadece başlığı döndür, tırnak veya ek açıklama yazma.", "Sen SEO başlık uzmanısın. Düşünce süreci veya İngilizce çeviri ASLA yazma. Sadece saf Türkçe başlığı döndür.", array('provider' => $provider, 'max_tokens' => 80, 'temperature' => 0.5));
         if ($title_res['success']) {
             $cleaned_t = $this->clean_title_text($title_res['content']);
             if (mb_strlen($cleaned_t, 'UTF-8') >= 8) {
@@ -167,7 +167,7 @@ class AI_SEO_Cron_Autopilot {
         }
 
         $meta_desc = '';
-        $desc_res = $this->ai_client->generate("Konu: '{$current_topic}'. Bu yazı için Google aramalarında görünecek, merak uyandıran ve tıklamaya teşvik eden 130-155 karakterlik tek bir SEO meta açıklaması yaz. Sadece açıklamayı döndür.", '', array('provider' => $provider, 'max_tokens' => 150, 'temperature' => 0.5));
+        $desc_res = $this->ai_client->generate("Konu: '{$current_topic}'. Bu yazı için Google aramalarında görünecek, merak uyandıran ve tıklamaya teşvik eden 130-155 karakterlik tek bir SEO meta açıklaması yaz. Sadece açıklamayı döndür.", "Sen SEO meta açıklaması uzmanısın. Düşünce süreci veya İngilizce çeviri ASLA yazma. Sadece saf Türkçe açıklamayı döndür.", array('provider' => $provider, 'max_tokens' => 150, 'temperature' => 0.5));
         if ($desc_res['success']) {
             $meta_desc = $this->clean_meta_desc($desc_res['content']);
         }
@@ -239,12 +239,34 @@ class AI_SEO_Cron_Autopilot {
     }
 
     /**
-     * Başlık Metnini Temizle (Prefix, tırnak, numara temizleme)
+     * Başlık Metnini Temizle (Düşünce Süreci, İngilizce Çeviri, Prefix, tırnak, numara temizleme)
      */
     private function clean_title_text($raw) {
         $t = trim(wp_strip_all_tags($raw), "\"'\n\r#* ");
+
+        // Düşünce süreci veya analyze input sızıntısını temizle
+        if (preg_match('/thinking\s+process|analyze\s+user\s+input/iu', $t)) {
+            if (preg_match('/[‘\'"]([^‘\'"]{10,})[’\'"]/u', $t, $m)) {
+                $t = $m[1];
+            } else {
+                $lines = preg_split('/\r\n|\n/', $t);
+                foreach ($lines as $l) {
+                    if (!preg_match('/thinking\s+process|analyze/iu', $l) && mb_strlen(trim($l), 'UTF-8') >= 8) {
+                        $t = trim($l);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Parantez içindeki gereksiz İngilizce çevirileri temizle
+        $t = preg_replace('/\([A-Za-z\s,:\'’\-\.\?]{8,}\)/u', '', $t);
+
+        // Prefixleri kaldır
         $t = preg_replace('/^(başlık|seo başlığı|title|öneri|konu)\s*:\s*/iu', '', $t);
         $t = preg_replace('/^(\d+[\.\-\)]\s*)/u', '', $t);
+        $t = preg_replace('/^[-–—]\s*/u', '', $t);
+
         return trim($t, "\"'\n\r#* ");
     }
 
@@ -253,6 +275,14 @@ class AI_SEO_Cron_Autopilot {
      */
     private function clean_meta_desc($raw) {
         $t = trim(wp_strip_all_tags($raw), "\"'\n\r#* ");
+
+        // Düşünce süreci sızıntısını kaldır
+        $t = preg_replace('/^(here[\'’]s\s+(a\s+)?thinking\s+process[\s\S]*?(?:\n\n|\r\n\r\n|(?=<h[1-6]|<p)))/iu', '', $t);
+        $t = preg_replace('/^(\*?\*?thinking\s+process:?\*?\*?[\s\S]*?(?:\n\n|\r\n\r\n|(?=<h[1-6]|<p)))/iu', '', $t);
+
+        // Parantez içindeki gereksiz İngilizce çevirileri temizle
+        $t = preg_replace('/\([A-Za-z\s,:\'’\-\.\?]{8,}\)/u', '', $t);
+
         $t = preg_replace('/^(açıklama|meta açıklama|meta description|description)\s*:\s*/iu', '', $t);
         return trim($t, "\"'\n\r#* ");
     }
