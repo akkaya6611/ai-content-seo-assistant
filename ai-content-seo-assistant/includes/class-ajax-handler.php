@@ -117,7 +117,28 @@ class AI_SEO_Ajax_Handler {
         $response = $this->ai_client->generate($user_prompt, $system_prompt, $opts);
 
         if ($response['success']) {
-            wp_send_json_success(array('content' => wp_kses_post($response['content'])));
+            $content = $response['content'];
+            if ($type === 'titles') {
+                $lines = explode("\n", $content);
+                $html_output = '<div class="ai-suggested-titles-list" style="display:flex; flex-direction:column; gap:10px; margin-top:5px;">';
+                $count = 0;
+                foreach ($lines as $line) {
+                    $clean = trim(wp_strip_all_tags($line), "\"'\n\r#* ");
+                    $clean = preg_replace('/^(başlık|seo başlığı|title|öneri)\s*:\s*/iu', '', $clean);
+                    $clean = preg_replace('/^(\d+[\.\-\)]\s*)/u', '', $clean);
+                    $clean = trim($clean, "\"'\n\r#* ");
+                    if (mb_strlen($clean, 'UTF-8') >= 6) {
+                        $count++;
+                        $html_output .= '<div class="ai-title-suggestion-card" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:6px; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">';
+                        $html_output .= '<div style="flex:1;"><span style="display:inline-block; width:20px; height:20px; line-height:20px; text-align:center; background:#f1f5f9; color:#475569; border-radius:50%; font-size:11px; font-weight:bold; margin-right:8px;">' . $count . '</span><strong class="ai-suggested-title-text" style="color:#0f172a; font-size:13.5px;">' . esc_html($clean) . '</strong></div>';
+                        $html_output .= '<button type="button" class="button button-small ai-btn-apply-title" data-title="' . esc_attr($clean) . '" style="background:#2563eb; color:#ffffff; border:none; font-weight:600; white-space:nowrap; padding:4px 12px; height:auto; cursor:pointer;">🎯 Bu Başlığı Seç</button>';
+                        $html_output .= '</div>';
+                    }
+                }
+                $html_output .= '</div>';
+                $content = $html_output;
+            }
+            wp_send_json_success(array('content' => $content));
         } else {
             wp_send_json_error(array('message' => sanitize_text_field($response['error'])));
         }
