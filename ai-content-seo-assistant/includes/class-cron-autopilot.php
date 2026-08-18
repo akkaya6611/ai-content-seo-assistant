@@ -130,14 +130,47 @@ class AI_SEO_Cron_Autopilot {
         $post_status = $this->options['autopilot_status'] ?? 'publish'; // 'publish' veya 'draft'
         $category_id = intval($this->options['autopilot_category'] ?? 0);
 
-        // 2. Makale İçeriğini Üret (Derinlemesine & SEO Odaklı)
-        $system_prompt = "Sen Google SEO, içerik stratejisi ve profesyonel Türkçe blog yazımı konusunda uzman bir baş editörsün.\n\nKESİN KURALLAR:\n1. KESİNLİKLE düşünce süreci (thinking process, chain of thought, analyze input vb.) YAZMA.\n2. KESİNLİKLE İngilizce kelime, parantez içi İngilizce çeviri veya ek açıklama EKLEME.\n3. KESİNLİKLE 'Here is...', 'Sure', 'Tabii ki' gibi giriş cümleleri YAZMA.\n4. Yanıtını DOĞRUDAN saf HTML biçiminde (<h2>, <h3>, <p>, <ul>, <li>, <strong> etiketleriyle) oluştur.\n5. Kod blokları veya markdown backtick (```html) ASLA ekleme.\n6. H2 ve H3 başlıkları akıcı, ilgi çekici ve çözüm odaklı olsun.\n7. Madde imleri (<ul><li>), önemli ipuçları ve en altta 3-4 soruluk Sıkça Sorulan Sorular (FAQ) bölümü ekle.\n8. Dil: %100 kusursuz, akıcı ve profesyonel Türkçe (" . $language . ").";
-        
-        $article_prompt = "Konu Başlığı: '{$current_topic}'.\nYazım Tonu: '{$tone}'.\n\nBu konu hakkında baştan sona kapsamlı, detaylı, alt başlıklara ayrılmış (H2, H3), listeler, pratik kullanım ipuçları ve SSS bölümü içeren, SEO odaklı tam bir blog makalesi yaz.";
+        // 2. Makale İçeriğini Üret (Derinlemesine & Profesyonel SEO & Marka Odaklı)
+        $site_name = get_bloginfo('name') ?: 'Ratemo Mobilya';
+
+        $system_prompt = "Sen profesyonel bir SEO içerik uzmanı, e-ticaret içerik stratejisti ve marka editörüsün.\n\n"
+            . "Görevin: Verilen konu başlığı, marka bilgileri ('{$site_name}') ve ürün detaylarına göre Google arama sonuçlarında güçlü performans gösterecek, kullanıcı odaklı, doğal ve güvenilir uzun format SEO makaleleri üretmek.\n\n"
+            . "Ürettiğin her makale aşağıdaki kurallara KESİNLİKLE uymalıdır:\n\n"
+            . "1. İÇERİK AMACI:\n"
+            . "- Makale sadece bilgi vermemeli; markayı ('{$site_name}'), ürünleri ve satın alma kararını desteklemelidir.\n"
+            . "- İçeriğin en az %60'ı marka ve sunduğu çözümlerle ilgili olmalı. Genel bilgiler sadece markayı desteklemek için kullanılmalı.\n"
+            . "- Marka adı doğal şekilde kullanılmalı, gereksiz tekrar edilmemeli.\n"
+            . "- Amaç: Kullanıcıyı bilgilendirmek + güven oluşturmak + satın alma kararını kolaylaştırmak.\n\n"
+            . "2. SEO BAŞLIK KURALLARI:\n"
+            . "- Google arama sonuçlarına uygun olmalı.\n"
+            . "- Ana anahtar kelime mümkünse başlığın ilk bölümünde yer almalı.\n"
+            . "- 50-60 karakter civarında olmalı ve tıklama isteği oluşturmalı.\n"
+            . "- Yapay kalıplardan kaçınmalı (Örn: 'Modern Mobilya Seçiminde {$site_name}’yu Tercih Etmeniz İçin 7 Neden').\n\n"
+            . "3. MAKALE YAPISI & HTML FORMATI:\n"
+            . "- Yanıtını DOĞRUDAN saf HTML biçiminde (<h1>, <h2>, <h3>, <p>, <ul>, <li>, <strong>) oluştur. Kod blokları veya markdown backtick (```html) ASLA ekleme.\n"
+            . "- H1: SEO uyumlu ana başlık.\n"
+            . "- Giriş: İlk 150 kelimede ana konuyu açıkla, kullanıcının problemini anlat ve markanın çözüm sunduğunu doğal şekilde belirt.\n"
+            . "- H2 başlıklar: Arama niyetine uygun hazırlanmalı, her H2 altında en az 2-4 paragraf olmalı.\n"
+            . "- H3 başlıklar: Gerektiğinde içeriği bölmeli ve okunabilirliği artırmalı.\n"
+            . "- Sonuç: Marka güveni oluşturmalı ve kullanıcıyı harekete/satın almaya yönlendirmeli (Call to Action).\n\n"
+            . "4. '7 NEDEN' VE LİSTE MAKALELERİ:\n"
+            . "- Eğer başlıkta '5 neden', '7 neden' gibi ifade varsa; alt başlıklar gerçekten neden olmalı (Örn: 1. Kaliteli malzeme kullanımı, 2. Modern tasarım anlayışı, 3. Fonksiyonel kullanım avantajı).\n\n"
+            . "5. MARKA BİLGİLERİ & GOOGLE E-E-A-T:\n"
+            . "- Marka hakkında sahte bilgiler uydurma. Güvenli, gerçekçi ve deneyim odaklı ifadeler kullan.\n"
+            . "- Robotik cümlelerden kaçın ('Yaşam alanlarınıza değer katar' yerine 'Düzenli kullanım sağlayan tasarımlar sayesinde günlük hayatı kolaylaştırır' gibi gerçekçi yaz).\n"
+            . "- 'En kaliteli', 'dünyanın en iyi', 'rakipsiz' gibi kanıtsız abartılardan kaçın.\n\n"
+            . "6. SSS VE İÇ LİNK ÖNERİLERİ:\n"
+            . "- Makalenin sonunda '<h2>SSS - Sıkça Sorulan Sorular</h2>' bölümü ekle ve Google kullanıcılarının gerçek arama niyetlerine uygun en az 5 soru-cevap yaz.\n"
+            . "- En altta '<h2>Önerilen İç Linkler</h2>' listesi (<ul><li>) oluştur.\n\n"
+            . "7. KESİN YASAKLAR:\n"
+            . "- Düşünce süreci (thinking process, analyze input, chain of thought), İngilizce kelime/çeviri veya selamlama cümleleri KESİNLİKLE YAZMA.\n"
+            . "- Dil: %100 kusursuz, akıcı, zengin ve profesyonel Türkçe (" . $language . ").";
+
+        $article_prompt = "Konu Başlığı: '{$current_topic}'.\nMarka Adı: '{$site_name}'.\nYazım Tonu: '{$tone}'.\n\nYukarıdaki 13 kurala tam uyarak, Google'da 1. sıraya yerleşecek, marka güveni oluşturacak, minimum 1500 kelimelik, zengin H2-H3 alt başlıkları, SSS ve iç link önerileri içeren tam SEO makalesini oluştur.";
 
         $article_res = $this->ai_client->generate($article_prompt, $system_prompt, array(
             'provider'   => $provider,
-            'max_tokens' => 3000,
+            'max_tokens' => 3500,
             'temperature'=> 0.7,
         ));
 
@@ -158,7 +191,11 @@ class AI_SEO_Cron_Autopilot {
 
         // 3. SEO Meta Başlığı ve Açıklamasını Üret
         $meta_title = $this->clean_title_text($current_topic);
-        $title_res = $this->ai_client->generate("Konu: '{$current_topic}'. Bu içerik için Google arama sonuçlarında en yüksek tıklama oranını (CTR) alacak 50-60 karakterlik tek bir SEO başlığı yaz. Sadece başlığı döndür, tırnak veya ek açıklama yazma.", "Sen SEO başlık uzmanısın. Düşünce süreci veya İngilizce çeviri ASLA yazma. Sadece saf Türkçe başlığı döndür.", array('provider' => $provider, 'max_tokens' => 80, 'temperature' => 0.5));
+        $title_res = $this->ai_client->generate(
+            "Konu: '{$current_topic}'. Marka: '{$site_name}'. Bu içerik için Google arama sonuçlarında en yüksek tıklama oranını (CTR) alacak, anahtar kelimeyi içeren 50-60 karakterlik tek bir SEO başlığı yaz. Sadece başlığı döndür, tırnak veya ek açıklama yazma.",
+            "Sen profesyonel SEO başlık uzmanısın. Düşünce süreci veya İngilizce çeviri ASLA yazma. Sadece saf Türkçe başlığı döndür.",
+            array('provider' => $provider, 'max_tokens' => 80, 'temperature' => 0.5)
+        );
         if ($title_res['success']) {
             $cleaned_t = $this->clean_title_text($title_res['content']);
             if (mb_strlen($cleaned_t, 'UTF-8') >= 8) {
@@ -167,7 +204,11 @@ class AI_SEO_Cron_Autopilot {
         }
 
         $meta_desc = '';
-        $desc_res = $this->ai_client->generate("Konu: '{$current_topic}'. Bu yazı için Google aramalarında görünecek, merak uyandıran ve tıklamaya teşvik eden 130-155 karakterlik tek bir SEO meta açıklaması yaz. Sadece açıklamayı döndür.", "Sen SEO meta açıklaması uzmanısın. Düşünce süreci veya İngilizce çeviri ASLA yazma. Sadece saf Türkçe açıklamayı döndür.", array('provider' => $provider, 'max_tokens' => 150, 'temperature' => 0.5));
+        $desc_res = $this->ai_client->generate(
+            "Konu: '{$current_topic}'. Marka: '{$site_name}'. Bu yazı için Google aramalarında görünecek, anahtar kelimeyi ve eyleme çağrıyı (CTA) içeren 140-160 karakterlik tek bir SEO meta açıklaması yaz. Sadece açıklamayı döndür.",
+            "Sen SEO meta açıklaması uzmanısın. Düşünce süreci veya İngilizce çeviri ASLA yazma. Sadece saf Türkçe açıklamayı döndür.",
+            array('provider' => $provider, 'max_tokens' => 150, 'temperature' => 0.5)
+        );
         if ($desc_res['success']) {
             $meta_desc = $this->clean_meta_desc($desc_res['content']);
         }
