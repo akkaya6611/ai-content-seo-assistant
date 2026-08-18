@@ -582,9 +582,52 @@ class AI_SEO_Client {
             );
         }
 
+        $clean_content = $this->decontaminate_response($content);
+
         return array(
             'success' => true,
-            'content' => trim($content),
+            'content' => $clean_content,
         );
+    }
+
+    /**
+     * Yapay Zeka Çıktısını Arındırma & Temizleme (Düşünce Süreci, İngilizce Çeviri ve Dolgu Filtresi)
+     */
+    public function decontaminate_response($text) {
+        if (!is_string($text) || empty(trim($text))) {
+            return '';
+        }
+
+        $t = trim($text);
+
+        // Baştaki ve sondaki tırnakları kaldır
+        $t = preg_replace('/^["\'“”]/u', '', $t);
+        $t = preg_replace('/["\'“”]$/u', '', $t);
+
+        // 1. <think>...</think> etiketlerini ve içeriğini kaldır (DeepSeek R1 vb.)
+        $t = preg_replace('/<think>[\s\S]*?<\/think>/i', '', $t);
+
+        // 2. "Here's a thinking process: ... " veya "Thinking process: ..." bloklarını kaldır
+        $t = preg_replace('/^(here[\'’]s\s+(a\s+)?thinking\s+process[\s\S]*?(?:\n\n|\r\n\r\n|(?=<h[1-6]|<p)))/iu', '', $t);
+        $t = preg_replace('/^(\*?\*?thinking\s+process:?\*?\*?[\s\S]*?(?:\n\n|\r\n\r\n|(?=<h[1-6]|<p)))/iu', '', $t);
+
+        if (preg_match('/^here[\'’]s\s+(a\s+)?thinking\s+process/iu', $t)) {
+            $parts = preg_split('/\n\s*\n/', $t, 2);
+            if (count($parts) > 1) {
+                $t = $parts[1];
+            }
+        }
+
+        // 3. Markdown kod blokları başlıklarını temizle (```html ... ```)
+        $t = preg_replace('/^```(?:html)?\s*/i', '', $t);
+        $t = preg_replace('/\s*```$/', '', $t);
+
+        // 4. Sohbet & Giriş Dolgularını temizle (Tabii ki, İşte hazırladığım, Sure, Here is...)
+        $t = preg_replace('/^(tabii ki|elbette|işte|işte hazırladığım|sure|here is|certainly)[^\n\r<]*?:\s*(\r\n|\n)?/iu', '', $t);
+
+        // 5. Parantez içindeki gereksiz İngilizce çevirileri temizle: (Style and Functionality in Small Apartments: Best Furniture...)
+        $t = preg_replace('/\([A-Za-z\s,:\'’\-\.\?]{10,}\)/u', '', $t);
+
+        return trim($t);
     }
 }
