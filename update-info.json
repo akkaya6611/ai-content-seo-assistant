@@ -1,7 +1,7 @@
 {
   "name": "AI Content & SEO Assistant",
   "slug": "ai-content-seo-assistant",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "author": "<a href=\"https://misteknoloji360.com.tr/\">Serkan AKKAYA</a>",
   "homepage": "https://misteknoloji360.com.tr/",
   "download_url": "https://raw.githubusercontent.com/akkaya6611/ai-content-seo-assistant/main/ai-content-seo-assistant.zip",
@@ -11,6 +11,6 @@
   "last_updated": "2026-08-18",
   "sections": {
     "description": "Yapay zeka destekli otomatik içerik üretimi, günlük zamanlanmış makale yayınlayıcı (Cron), canlı SERP önizlemeli SEO meta etiketleri, Schema.org JSON-LD yapısal veri motoru ve Lisans & Aktivasyon koruma sistemi. Groq, Google Gemini, DeepSeek, OpenRouter, Claude ve OpenAI destekler.",
-    "changelog": "<h4>1.1.8 (Sıkı Lisans Denetimi & Arayüz Kilit Koruması)</h4><ul><li>🔒 Eklenti lisansı etkinleştirilmediğinde tüm AI içerik üretimi, SEO meta ve otomatik pilot özellikleri kilitlendi.</li><li>🔑 Masaüstü programı 'MIS-PRO-XXXX-XXXX' anahtar doğrulama motoru ile %100 senkronize edildi.</li><li>📡 'licenses.json' bulut ve merkezi sunucu anlık lisans kontrolü devreye alındı.</li><li>👨‍💻 Geliştirici: Serkan AKKAYA (misteknoloji360.com.tr)</li></ul>"
+    "changelog": "<h4>1.1.9 (Otomatik Pilot & Akıllı Konu Üreticisi)</h4><ul><li>🚀 Konu havuzu boş olsa dahi Yapay Zeka sitenize uygun güncel konuyu kendisi otomatik türeterek makaleyi kesintisiz üretir.</li><li>⚡ 'Şimdi 1 Makale Üret (Test Et)' butonu tam akıllı hale getirildi.</li><li>👨‍💻 Geliştirici: Serkan AKKAYA (misteknoloji360.com.tr)</li></ul>"
   }
 }
