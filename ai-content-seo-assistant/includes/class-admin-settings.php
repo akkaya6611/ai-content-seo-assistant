@@ -250,7 +250,7 @@ class AI_SEO_Admin_Settings {
                             <p class="description"><?php esc_html_e('İçerik ve SEO üretiminde öncelikli kullanılacak sağlayıcıyı seçin.', 'ai-content-seo-assistant'); ?></p>
                             <select name="ai_seo_assistant_options[default_provider]" id="default_provider" class="regular-text">
                                 <option value="groq" <?php selected($opts['default_provider'] ?? '', 'groq'); ?>>Groq (Ultra Hızlı - Llama 3.3 70B & DeepSeek R1)</option>
-                                <option value="gemini" <?php selected($opts['default_provider'] ?? 'gemini', 'gemini'); ?>>Google Gemini (gemini-2.5-flash / Pro)</option>
+                                <option value="gemini" <?php selected($opts['default_provider'] ?? 'gemini', 'gemini'); ?>>Google Gemini (gemini-3.6-flash / 3.1-pro - Hızlı & Güçlü)</option>
                                 <option value="deepseek" <?php selected($opts['default_provider'] ?? '', 'deepseek'); ?>>DeepSeek (deepseek-chat / reasoner)</option>
                                 <option value="openrouter" <?php selected($opts['default_provider'] ?? '', 'openrouter'); ?>>OpenRouter (Ücretsiz & Ücretli Modeller)</option>
                                 <option value="anthropic" <?php selected($opts['default_provider'] ?? '', 'anthropic'); ?>>Anthropic Claude (3.7 Sonnet / Haiku)</option>
@@ -331,9 +331,9 @@ class AI_SEO_Admin_Settings {
                                 <label for="gemini_model"><?php esc_html_e('Model:', 'ai-content-seo-assistant'); ?></label>
                                 <select id="gemini_model" name="ai_seo_assistant_options[gemini_model]" class="regular-text">
                                     <option value="gemini-3.6-flash" <?php selected($opts['gemini_model'] ?? 'gemini-3.6-flash', 'gemini-3.6-flash'); ?>>gemini-3.6-flash (★ En Yeni Standart Model - Google Önerilen)</option>
+                                    <option value="gemini-3.1-pro-preview" <?php selected($opts['gemini_model'] ?? '', 'gemini-3.1-pro-preview'); ?>>gemini-3.1-pro-preview (★ Yeni Nesil Pro Model - Google Önerilen)</option>
                                     <option value="gemini-2.5-flash" <?php selected($opts['gemini_model'] ?? '', 'gemini-2.5-flash'); ?>>gemini-2.5-flash (Hızlı & Güçlü)</option>
                                     <option value="gemini-3.6-pro" <?php selected($opts['gemini_model'] ?? '', 'gemini-3.6-pro'); ?>>gemini-3.6-pro (Gelişmiş Muhakeme)</option>
-                                    <option value="gemini-2.5-pro" <?php selected($opts['gemini_model'] ?? '', 'gemini-2.5-pro'); ?>>gemini-2.5-pro (Derin Analiz)</option>
                                 </select>
                             </div>
                             <button type="button" class="button ai-test-api-btn" data-provider="gemini"><?php esc_html_e('Bağlantıyı Test Et', 'ai-content-seo-assistant'); ?></button>
