@@ -78,34 +78,67 @@ class AI_SEO_Ajax_Handler {
             wp_send_json_error(array('message' => __('Lütfen bir konu veya başlık girin.', 'ai-content-seo-assistant')));
         }
 
-        $system_prompt = "Sen Google SEO, içerik pazarlaması ve profesyonel Türkçe blog yazımı konusunda uzman bir baş editörsün.\n\nKESİN KURALLAR:\n1. KESİNLİKLE düşünce süreci (thinking process, chain of thought, analyze input vb.) YAZMA.\n2. KESİNLİKLE İngilizce kelime, parantez içi İngilizce çeviri veya açıklama EKLEME.\n3. KESİNLİKLE 'Here is...', 'Sure', 'Tabii ki' gibi giriş cümleleri YAZMA.\n4. Yanıtını DOĞRUDAN saf HTML biçiminde (<h2>, <h3>, <p>, <ul>, <li>, <strong>, <blockquote>) oluştur.\n5. Kod blokları veya markdown backtick (```html) ASLA ekleme.\n6. Girişte okuyucuyu kancalayan (Hook) merak uyandırıcı bir giriş yap.\n7. Alt başlıklar (H2, H3), maddeli listeler ve SSS (FAQ) bölümleriyle zenginleştir.\n8. Dil: %100 kusursuz, akıcı, zengin ve profesyonel Türkçe (" . $language . ").";
+        $site_name = get_bloginfo('name') ?: 'Ratemo Mobilya';
+
+        $system_prompt = "Sen profesyonel bir SEO içerik uzmanı, e-ticaret içerik stratejisti ve marka editörüsün.\n\n"
+            . "Görevin: Verilen konu başlığı, marka bilgileri ('{$site_name}') ve ürün detaylarına göre Google arama sonuçlarında güçlü performans gösterecek, kullanıcı odaklı, doğal ve güvenilir uzun format SEO makaleleri üretmek.\n\n"
+            . "Ürettiğin her makale aşağıdaki kurallara KESİNLİKLE uymalıdır:\n\n"
+            . "1. İÇERİK AMACI:\n"
+            . "- Makale sadece bilgi vermemeli; markayı ('{$site_name}'), ürünleri ve satın alma kararını desteklemelidir.\n"
+            . "- İçeriğin en az %60'ı marka ve sunduğu çözümlerle ilgili olmalı. Genel bilgiler sadece markayı desteklemek için kullanılmalı.\n"
+            . "- Marka adı doğal şekilde kullanılmalı, gereksiz tekrar edilmemeli.\n"
+            . "- Amaç: Kullanıcıyı bilgilendirmek + güven oluşturmak + satın alma kararını kolaylaştırmak.\n\n"
+            . "2. SEO BAŞLIK KURALLARI:\n"
+            . "- Google arama sonuçlarına uygun olmalı.\n"
+            . "- Ana anahtar kelime mümkünse başlığın ilk bölümünde yer almalı.\n"
+            . "- 50-60 karakter civarında olmalı ve tıklama isteği oluşturmalı.\n"
+            . "- Yapay kalıplardan kaçınmalı (Örn: 'Modern Mobilya Seçiminde {$site_name}’yu Tercih Etmeniz İçin 7 Neden').\n\n"
+            . "3. MAKALE YAPISI & HTML FORMATI:\n"
+            . "- Yanıtını DOĞRUDAN saf HTML biçiminde (<h1>, <h2>, <h3>, <p>, <ul>, <li>, <strong>) oluştur. Kod blokları veya markdown backtick (```html) ASLA ekleme.\n"
+            . "- H1: SEO uyumlu ana başlık.\n"
+            . "- Giriş: İlk 150 kelimede ana konuyu açıkla, kullanıcının problemini anlat ve markanın çözüm sunduğunu doğal şekilde belirt.\n"
+            . "- H2 başlıklar: Arama niyetine uygun hazırlanmalı, her H2 altında en az 2-4 paragraf olmalı.\n"
+            . "- H3 başlıklar: Gerektiğinde içeriği bölmeli ve okunabilirliği artırmalı.\n"
+            . "- Sonuç: Marka güveni oluşturmalı ve kullanıcıyı harekete/satın almaya yönlendirmeli (Call to Action).\n\n"
+            . "4. '7 NEDEN' VE LİSTE MAKALELERİ:\n"
+            . "- Eğer başlıkta '5 neden', '7 neden' gibi ifade varsa; alt başlıklar gerçekten neden olmalı (Örn: 1. Kaliteli malzeme kullanımı, 2. Modern tasarım anlayışı, 3. Fonksiyonel kullanım avantajı).\n\n"
+            . "5. MARKA BİLGİLERİ & GOOGLE E-E-A-T:\n"
+            . "- Marka hakkında sahte bilgiler uydurma. Güvenli, gerçekçi ve deneyim odaklı ifadeler kullan.\n"
+            . "- Robotik cümlelerden kaçın ('Yaşam alanlarınıza değer katar' yerine 'Düzenli kullanım sağlayan tasarımlar sayesinde günlük hayatı kolaylaştırır' gibi gerçekçi yaz).\n"
+            . "- 'En kaliteli', 'dünyanın en iyi', 'rakipsiz' gibi kanıtsız abartılardan kaçın.\n\n"
+            . "6. SSS VE İÇ LİNK ÖNERİLERİ:\n"
+            . "- Makalenin sonunda '<h2>SSS - Sıkça Sorulan Sorular</h2>' bölümü ekle ve Google kullanıcılarının gerçek arama niyetlerine uygun en az 5 soru-cevap yaz.\n"
+            . "- En altta '<h2>Önerilen İç Linkler</h2>' listesi (<ul><li>) oluştur.\n\n"
+            . "7. KESİN YASAKLAR:\n"
+            . "- Düşünce süreci (thinking process, analyze input, chain of thought), İngilizce kelime/çeviri veya selamlama cümleleri KESİNLİKLE YAZMA.\n"
+            . "- Dil: %100 kusursuz, akıcı, zengin ve profesyonel Türkçe (" . $language . ").";
 
         $user_prompt = "";
         switch ($type) {
             case 'titles':
-                $system_prompt = "Sen Google arama motoru (SERP) ve yüksek tıklama oranı (CTR) uzmanısın. KESİNLİKLE düşünce süreci veya İngilizce çeviri yazma. Sadece saf Türkçe başlıkları döndür.";
-                $user_prompt = "Konu: '{$topic}'. Odak Anahtar Kelimeler: '{$keywords}'.\n\nBu konu hakkında Google aramalarında en çok tıklanacak 5 adet özgün ve dikkat çekici Türkçe blog başlığı önerisi yaz.\n\nKurallar:\n- Uzunlukları 45-65 karakter arasında olsun.\n- Liste halinde (1., 2., 3., 4., 5.) olarak sadece başlıkları yaz.";
+                $system_prompt = "Sen Google arama motoru (SERP) ve yüksek tıklama oranı (CTR) uzmanısın. Marka: '{$site_name}'. KESİNLİKLE düşünce süreci veya İngilizce çeviri yazma. Sadece saf Türkçe başlıkları döndür.";
+                $user_prompt = "Konu: '{$topic}'. Odak Anahtar Kelimeler: '{$keywords}'. Marka: '{$site_name}'.\n\nBu konu hakkında Google aramalarında en çok tıklanacak, marka otoritesini güçlendiren 5 adet özgün ve dikkat çekici Türkçe SEO başlığı önerisi yaz.\n\nKurallar:\n- Uzunlukları 50-60 karakter arasında olsun.\n- Liste halinde (1., 2., 3., 4., 5.) olarak sadece saf başlıkları yaz.";
                 break;
 
             case 'outline':
-                $user_prompt = "Konu: '{$topic}'. Anahtar Kelimeler: '{$keywords}'. Bu konu için H2 ve H3 başlıklarını içeren, mantıksal akışa sahip, eksiksiz bir makale taslağı (outline) ve planı hazırla.";
+                $user_prompt = "Konu: '{$topic}'. Anahtar Kelimeler: '{$keywords}'. Marka: '{$site_name}'. Bu konu için H1, H2 ve H3 başlıklarını, SSS ve iç link planını içeren, mantıksal akışa sahip, eksiksiz bir makale taslağı (outline) ve planı hazırla.";
                 break;
 
             case 'intro':
-                $user_prompt = "Konu: '{$topic}'. Anahtar Kelimeler: '{$keywords}'. Yazım Tonu: '{$tone}'. Okuyucunun dikkatini ilk 5 saniyede çekecek, problemi ve sunulacak çözümü özetleyen etkileyici 2-3 paragraflık bir giriş bölümü (kanca) yaz.";
+                $user_prompt = "Konu: '{$topic}'. Anahtar Kelimeler: '{$keywords}'. Marka: '{$site_name}'. Yazım Tonu: '{$tone}'. İlk 150 kelimede ana konuyu ve kullanıcının problemini açıklayan, markanın ({$site_name}) sunduğu çözümleri doğal olarak belirten etkileyici bir giriş bölümü yaz.";
                 break;
 
             case 'conclusion':
-                $user_prompt = "Konu: '{$topic}'. Anahtar Kelimeler: '{$keywords}'. Yazım Tonu: '{$tone}'. Makaleyi güçlü bir şekilde özetleyen ve okuyucuyu yorum yapmaya veya harekete geçmeye yönlendiren (Call to Action) bir sonuç bölümü yaz.";
+                $user_prompt = "Konu: '{$topic}'. Anahtar Kelimeler: '{$keywords}'. Marka: '{$site_name}'. Yazım Tonu: '{$tone}'. Makaleyi güçlü bir şekilde özetleyen, marka güveni oluşturan ve okuyucuyu aksiyona/satın almaya yönlendiren (Call to Action) bir sonuç bölümü yaz.";
                 break;
 
             case 'faq':
-                $user_prompt = "Konu: '{$topic}'. Bu konu hakkında kullanıcıların Google'da en çok arattığı 4-5 sıkça sorulan soruyu (SSS / FAQ) belirle ve her birine net, anlaşılır ve güven verici yanıtlar yaz. H3 soru başlıkları ve paragraflar kullan.";
+                $user_prompt = "Konu: '{$topic}'. Marka: '{$site_name}'. Bu konu hakkında kullanıcıların Google'da en çok arattığı 5 sıkça sorulan soruyu (SSS / FAQ) belirle ve her birine net, anlaşılır ve güven verici yanıtlar yaz. H3 soru başlıkları ve paragraflar kullan.";
                 break;
 
             case 'article':
             default:
-                $user_prompt = "Konu Başlığı: '{$topic}'.\nOdak Anahtar Kelimeler: '{$keywords}'.\nYazım Tonu: '{$tone}'.\n\nBu konu hakkında baştan sona kapsamlı, detaylı, alt başlıklara ayrılmış (H2, H3), maddeli listeler ve kullanım ipuçları içeren, SEO odaklı tam bir blog makalesi yaz.";
+                $user_prompt = "Konu Başlığı: '{$topic}'.\nOdak Anahtar Kelimeler: '{$keywords}'.\nMarka Adı: '{$site_name}'.\nYazım Tonu: '{$tone}'.\n\nYukarıdaki 13 kurala tam uyarak, Google'da 1. sıraya yerleşecek, marka güveni oluşturacak, minimum 1500 kelimelik, zengin H2-H3 alt başlıkları, SSS ve iç link önerileri içeren tam SEO makalesini oluştur.";
                 break;
         }
 
