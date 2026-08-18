@@ -141,6 +141,89 @@
             });
         });
 
+        // Activate License
+        $(document).on('click', '#ai-btn-activate-license', function(e) {
+            e.preventDefault();
+
+            var $btn = $(this);
+            var $status = $('#ai-license-ajax-status');
+            var licenseKey = $('#ai_license_key_input').val().trim();
+
+            if (!licenseKey) {
+                alert('Lütfen bir lisans anahtarı girin.');
+                return;
+            }
+
+            $btn.prop('disabled', true);
+            $btn.find('.ai-spin-icon').show();
+            $status.removeClass('success error').css('color', '#646970').text('Lisans doğrulanıyor...');
+
+            $.ajax({
+                url: aiSeoSettings.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'ai_seo_activate_license',
+                    license_key: licenseKey,
+                    security: aiSeoSettings.nonce
+                },
+                success: function(res) {
+                    $btn.prop('disabled', false);
+                    $btn.find('.ai-spin-icon').hide();
+                    if (res.success) {
+                        $status.css('color', '#1e7e34').text(res.data.message);
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1200);
+                    } else {
+                        $status.css('color', '#d63638').text(res.data.message || aiSeoSettings.strings.error);
+                    }
+                },
+                error: function() {
+                    $btn.prop('disabled', false);
+                    $btn.find('.ai-spin-icon').hide();
+                    $status.css('color', '#d63638').text(aiSeoSettings.strings.error);
+                }
+            });
+        });
+
+        // Deactivate License
+        $(document).on('click', '#ai-btn-deactivate-license', function(e) {
+            e.preventDefault();
+
+            if (!confirm('Lisansı bu siteden kaldırmak istediğinize emin misiniz?')) {
+                return;
+            }
+
+            var $btn = $(this);
+            var $status = $('#ai-license-ajax-status');
+
+            $btn.prop('disabled', true);
+            $btn.find('.ai-spin-icon').show();
+            $status.removeClass('success error').css('color', '#646970').text('Lisans kaldırılıyor...');
+
+            $.ajax({
+                url: aiSeoSettings.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'ai_seo_deactivate_license',
+                    security: aiSeoSettings.nonce
+                },
+                success: function(res) {
+                    $btn.prop('disabled', false);
+                    $btn.find('.ai-spin-icon').hide();
+                    $status.css('color', '#1e7e34').text(res.data.message);
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                },
+                error: function() {
+                    $btn.prop('disabled', false);
+                    $btn.find('.ai-spin-icon').hide();
+                    $status.css('color', '#d63638').text(aiSeoSettings.strings.error);
+                }
+            });
+        });
+
     });
 
 })(jQuery);
