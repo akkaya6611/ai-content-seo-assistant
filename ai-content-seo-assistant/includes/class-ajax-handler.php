@@ -232,6 +232,7 @@ class AI_SEO_Ajax_Handler {
             'key'        => $actual_key,
             'base_url'   => $base_url ?: ($saved_opts['custom_base_url'] ?? ''),
             'max_tokens' => 30,
+            'is_test'    => true,
         );
 
         $client = new AI_SEO_Client();
