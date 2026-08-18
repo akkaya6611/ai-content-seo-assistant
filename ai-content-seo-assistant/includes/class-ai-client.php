@@ -200,7 +200,7 @@ class AI_SEO_Client {
     }
 
     /**
-     * Google Gemini API çağrısı (Gemini 2.5 Flash / 2.0 Flash / 1.5 Flash)
+     * Google Gemini API çağrısı (Gemini 3.6 Flash / 2.5 Flash)
      */
     private function call_gemini($prompt, $system_prompt, $model, $key, $temperature, $max_tokens) {
         $api_key = $key ?: trim($this->options['gemini_key'] ?? '');
@@ -208,7 +208,7 @@ class AI_SEO_Client {
             return array('success' => false, 'error' => __('Google Gemini API anahtarı girilmemiş. Lütfen eklenti ayarlarını kontrol edin.', 'ai-content-seo-assistant'));
         }
 
-        $model = $model ?: ($this->options['gemini_model'] ?? 'gemini-2.5-flash');
+        $model = $model ?: ($this->options['gemini_model'] ?? 'gemini-3.6-flash');
         $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . urlencode($model) . ':generateContent?key=' . urlencode($api_key);
 
         $body = array(
@@ -243,9 +243,9 @@ class AI_SEO_Client {
 
         $res = $this->post_json($url, array(), $body, $gemini_extractor);
 
-        // Eğer 404 (model bulunamadı) dönerse, kararlı gemini-1.5-flash veya gemini-2.0-flash ile otomatik tekrar dene
-        if (!$res['success'] && (strpos($res['error'], '404') !== false || strpos($res['error'], 'not found') !== false || strpos($res['error'], 'no longer available') !== false)) {
-            $fallbacks = array('gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash');
+        // Eğer 404/400 (model bulunamadı veya no longer available) dönerse, gemini-3.6-flash ve gemini-2.5-flash ile otomatik tekrar dene
+        if (!$res['success'] && (strpos($res['error'], '404') !== false || strpos($res['error'], '400') !== false || strpos($res['error'], 'not found') !== false || strpos($res['error'], 'no longer available') !== false)) {
+            $fallbacks = array('gemini-3.6-flash', 'gemini-2.5-flash', 'gemini-2.5-pro');
             foreach ($fallbacks as $fb) {
                 if ($fb === $model) continue;
                 $fallback_url = 'https://generativelanguage.googleapis.com/v1beta/models/' . urlencode($fb) . ':generateContent?key=' . urlencode($api_key);
