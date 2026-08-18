@@ -49,9 +49,24 @@ class AI_SEO_Editor_Metabox {
         $focus_keyword = get_post_meta($post->ID, '_ai_seo_focus_keyword', true);
         $default_provider = $this->options['default_provider'] ?? 'openrouter';
         $site_name = get_bloginfo('name');
-        $sample_url = get_permalink($post->ID) ?: home_url('/ornek-yazi-linki/');
+        $is_licensed = class_exists('AI_SEO_License_Manager') ? AI_SEO_License_Manager::is_licensed() : false;
         ?>
         <div class="ai-seo-panel-container" id="ai-seo-panel-app">
+
+            <?php if (!$is_licensed): ?>
+                <div style="background:#fef2f2; border:1px solid #f87171; border-radius:8px; padding:12px 16px; margin-bottom:15px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span class="dashicons dashicons-lock" style="font-size:24px; width:24px; height:24px; color:#ef4444;"></span>
+                        <div>
+                            <strong style="color:#991b1b; font-size:13px; display:block;"><?php esc_html_e('Eklenti Lisansı Etkin Değil', 'ai-content-seo-assistant'); ?></strong>
+                            <span style="color:#b91c1c; font-size:12px;"><?php esc_html_e('Yapay zeka ile makale, iyileştirme ve SEO meta üretimi yapabilmek için lisansınızı etkinleştirin.', 'ai-content-seo-assistant'); ?></span>
+                        </div>
+                    </div>
+                    <a href="<?php echo admin_url('admin.php?page=ai-content-seo-assistant-license'); ?>" target="_blank" class="button button-primary" style="background:#ef4444; border-color:#dc2626; font-weight:600; white-space:nowrap;">
+                        🔑 <?php esc_html_e('Lisansı Etkinleştir', 'ai-content-seo-assistant'); ?>
+                    </a>
+                </div>
+            <?php endif; ?>
             
             <!-- Sekme Başlıkları -->
             <div class="ai-seo-tabs-nav">
