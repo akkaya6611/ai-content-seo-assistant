@@ -257,6 +257,9 @@ class AI_SEO_Admin_Settings {
                                 <option value="openai" <?php selected($opts['default_provider'] ?? '', 'openai'); ?>>OpenAI (GPT-4o-mini / GPT-4o / o3-mini)</option>
                                 <option value="custom" <?php selected($opts['default_provider'] ?? '', 'custom'); ?>>Özel / Anthropic Uyumlu (Z.ai, MiniMax, Yerel LLM)</option>
                             </select>
+                            <p class="description" style="margin-top:8px; color:#0284c7; font-weight:500;">
+                                <span class="dashicons dashicons-shield"></span> <strong><?php esc_html_e('Kesintisiz Üretim (Auto-Failover):', 'ai-content-seo-assistant'); ?></strong> <?php esc_html_e('Seçtiğiniz sağlayıcının günlük kotası veya istek limiti dolarsa, sistem durmaz; tanımladığınız diğer API anahtarlarını (Groq, Gemini, OpenRouter, DeepSeek vb.) sırayla otomatik devreye sokarak makaleyi kesintisiz üretir.', 'ai-content-seo-assistant'); ?>
+                            </p>
                         </div>
 
                         <!-- Groq -->
