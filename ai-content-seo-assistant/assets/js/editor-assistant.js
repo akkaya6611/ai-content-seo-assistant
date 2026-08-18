@@ -313,10 +313,34 @@
             }, 2000);
         });
 
+        function cleanTitleStr(title) {
+            if (!title) return '';
+            var t = $.trim(title);
+            t = t.replace(/^["'“”]/, '').replace(/["'“”]$/, '');
+            if (/(?:here[’']?s\s+a\s+|s\s+a\s+|\*?\*?)thinking\s+process|analyze\s+user\s+input|constraint\s+\d/i.test(t)) {
+                var m = t.match(/[‘'"]([^‘'"]{10,})[’'"]/);
+                if (m) {
+                    t = m[1];
+                } else {
+                    var mTopic = t.match(/topic:?\s*[‘'"*]*([^‘'"*\r\n]{8,})/i);
+                    if (mTopic) {
+                        t = mTopic[1];
+                    }
+                }
+            }
+            t = t.replace(/\([A-Za-z\s,:'’\-.\?]{8,}\)/g, '');
+            t = t.replace(/^(?:başlık|seo başlığı|title|öneri|konu|topic)\s*:\s*/i, '');
+            t = t.replace(/^(\d+[\.\-\)]\s*)/, '');
+            t = t.replace(/^[-–—]\s*/, '');
+            return $.trim(t);
+        }
+
         // 8. Başlığı WordPress Editörüne Aktarma
         function setPostTitle(title) {
             if (!title) return;
-            title = $.trim(title);
+            title = cleanTitleStr(title);
+            if (!title) return;
+
             // Gutenberg Block Editor
             if (window.wp && wp.data && wp.data.dispatch('core/editor')) {
                 try {
