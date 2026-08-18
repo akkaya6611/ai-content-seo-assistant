@@ -313,10 +313,10 @@ class AI_SEO_Admin_Settings {
                             <div class="ai-field-group">
                                 <label for="gemini_model"><?php esc_html_e('Model:', 'ai-content-seo-assistant'); ?></label>
                                 <select id="gemini_model" name="ai_seo_assistant_options[gemini_model]" class="regular-text">
-                                    <option value="gemini-2.5-flash" <?php selected($opts['gemini_model'] ?? 'gemini-2.5-flash', 'gemini-2.5-flash'); ?>>gemini-2.5-flash (★ En Yeni Standart Model - Önerilen)</option>
-                                    <option value="gemini-1.5-flash" <?php selected($opts['gemini_model'] ?? '', 'gemini-1.5-flash'); ?>>gemini-1.5-flash (Hızlı & Kararlı)</option>
-                                    <option value="gemini-2.5-pro" <?php selected($opts['gemini_model'] ?? '', 'gemini-2.5-pro'); ?>>gemini-2.5-pro (Gelişmiş Düşünme)</option>
-                                    <option value="gemini-1.5-pro" <?php selected($opts['gemini_model'] ?? '', 'gemini-1.5-pro'); ?>>gemini-1.5-pro (Geniş Bağlam)</option>
+                                    <option value="gemini-3.6-flash" <?php selected($opts['gemini_model'] ?? 'gemini-3.6-flash', 'gemini-3.6-flash'); ?>>gemini-3.6-flash (★ En Yeni Standart Model - Google Önerilen)</option>
+                                    <option value="gemini-2.5-flash" <?php selected($opts['gemini_model'] ?? '', 'gemini-2.5-flash'); ?>>gemini-2.5-flash (Hızlı & Güçlü)</option>
+                                    <option value="gemini-3.6-pro" <?php selected($opts['gemini_model'] ?? '', 'gemini-3.6-pro'); ?>>gemini-3.6-pro (Gelişmiş Muhakeme)</option>
+                                    <option value="gemini-2.5-pro" <?php selected($opts['gemini_model'] ?? '', 'gemini-2.5-pro'); ?>>gemini-2.5-pro (Derin Analiz)</option>
                                 </select>
                             </div>
                             <button type="button" class="button ai-test-api-btn" data-provider="gemini"><?php esc_html_e('Bağlantıyı Test Et', 'ai-content-seo-assistant'); ?></button>
