@@ -257,9 +257,11 @@ class AI_SEO_Admin_Settings {
                                 <label for="groq_model"><?php esc_html_e('Model:', 'ai-content-seo-assistant'); ?></label>
                                 <select id="groq_model" name="ai_seo_assistant_options[groq_model]" class="regular-text">
                                     <option value="llama-3.3-70b-versatile" <?php selected($opts['groq_model'] ?? 'llama-3.3-70b-versatile', 'llama-3.3-70b-versatile'); ?>>llama-3.3-70b-versatile (★ Llama 3.3 70B - En Güçlü & Kararlı - Önerilen)</option>
+                                    <option value="openai/gpt-oss-120b" <?php selected($opts['groq_model'] ?? '', 'openai/gpt-oss-120b'); ?>>openai/gpt-oss-120b (★ GPT OSS 120B - 500 t/s Amiral Gemisi)</option>
+                                    <option value="openai/gpt-oss-20b" <?php selected($opts['groq_model'] ?? '', 'openai/gpt-oss-20b'); ?>>openai/gpt-oss-20b (⚡ GPT OSS 20B - 1000 t/s Işık Hızında)</option>
+                                    <option value="qwen/qwen3.6-27b" <?php selected($opts['groq_model'] ?? '', 'qwen/qwen3.6-27b'); ?>>qwen/qwen3.6-27b (Qwen 3.6 27B - Yüksek Türkçe Kalitesi)</option>
+                                    <option value="groq/compound" <?php selected($opts['groq_model'] ?? '', 'groq/compound'); ?>>groq/compound (Groq Compound Akıllı Ajan)</option>
                                     <option value="deepseek-r1-distill-llama-70b" <?php selected($opts['groq_model'] ?? '', 'deepseek-r1-distill-llama-70b'); ?>>deepseek-r1-distill-llama-70b (DeepSeek R1 Muhakeme)</option>
-                                    <option value="gemma2-9b-it" <?php selected($opts['groq_model'] ?? '', 'gemma2-9b-it'); ?>>gemma2-9b-it (Google Gemma 2)</option>
-                                    <option value="mixtral-8x7b-32768" <?php selected($opts['groq_model'] ?? '', 'mixtral-8x7b-32768'); ?>>mixtral-8x7b-32768 (Geniş Bağlam)</option>
                                 </select>
                             </div>
                             <button type="button" class="button ai-test-api-btn" data-provider="groq"><?php esc_html_e('Bağlantıyı Test Et', 'ai-content-seo-assistant'); ?></button>
