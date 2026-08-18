@@ -217,10 +217,12 @@ class AI_SEO_Client {
 
         $res = $this->post_json($url, array(), $body, $gemini_extractor);
 
-        // Eğer 404 (model bulunamadı) dönerse, kararlı gemini-1.5-flash ile otomatik tekrar dene
-        if (!$res['success'] && (strpos($res['error'], '404') !== false || strpos($res['error'], 'no longer available') !== false) && $model !== 'gemini-1.5-flash') {
-            $fallback_url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . urlencode($api_key);
-            $res = $this->post_json($fallback_url, array(), $body, $gemini_extractor);
+        // Eğer 404 (model bulunamadı) dönerse, kararlı gemini-1.5-flash veya gemini-2.0-flash ile otomatik tekrar dene
+        if (!$res['success'] && (strpos($res['error'], '404') !== false || strpos($res['error'], 'not found') !== false || strpos($res['error'], 'no longer available') !== false)) {
+            if ($model !== 'gemini-1.5-flash') {
+                $fallback_url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . urlencode($api_key);
+                $res = $this->post_json($fallback_url, array(), $body, $gemini_extractor);
+            }
         }
 
         return $res;
@@ -405,18 +407,23 @@ class AI_SEO_Client {
             'method'      => 'POST',
             'headers'     => $headers,
             'body'        => wp_json_encode($body),
-            'timeout'     => 60,
+            'timeout'     => 45,
             'data_format' => 'body',
-            'sslverify'   => apply_filters('ai_seo_sslverify', true),
+            'sslverify'   => apply_filters('ai_seo_sslverify', false),
         );
 
         $response = wp_remote_post($url, $args);
 
         if (is_wp_error($response)) {
-            return array(
-                'success' => false,
-                'error'   => sprintf(__('Bağlantı hatası: %s', 'ai-content-seo-assistant'), esc_html($response->get_error_message())),
-            );
+            // SSL veya sunucu hatası varsa son çare sslverify=false ile tekrar dene
+            $args['sslverify'] = false;
+            $response = wp_remote_post($url, $args);
+            if (is_wp_error($response)) {
+                return array(
+                    'success' => false,
+                    'error'   => sprintf(__('Sunucu bağlantı hatası: %s', 'ai-content-seo-assistant'), esc_html($response->get_error_message())),
+                );
+            }
         }
 
         $status_code = wp_remote_retrieve_response_code($response);
