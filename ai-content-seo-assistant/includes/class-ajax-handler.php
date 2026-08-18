@@ -25,6 +25,8 @@ class AI_SEO_Ajax_Handler {
         add_action('wp_ajax_ai_seo_test_connection', array($this, 'handle_test_connection'));
         add_action('wp_ajax_ai_seo_trigger_autopilot_now', array($this, 'handle_trigger_autopilot_now'));
         add_action('wp_ajax_ai_seo_force_check_updates', array($this, 'handle_force_check_updates'));
+        add_action('wp_ajax_ai_seo_activate_license', array($this, 'handle_activate_license'));
+        add_action('wp_ajax_ai_seo_deactivate_license', array($this, 'handle_deactivate_license'));
     }
 
     /**
@@ -297,5 +299,42 @@ class AI_SEO_Ajax_Handler {
                 'message'    => sprintf(__('✓ Tebrikler! Eklentiniz güncel (v%s). Yeni bir güncelleme bulunmuyor.', 'ai-content-seo-assistant'), AI_SEO_VERSION),
             ));
         }
+    }
+
+    /**
+     * Lisansı Etkinleştirme
+     */
+    public function handle_activate_license() {
+        check_ajax_referer('ai_seo_settings_nonce', 'security');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => __('Yetkisiz işlem.', 'ai-content-seo-assistant')));
+        }
+
+        $license_key = sanitize_text_field(trim($_POST['license_key'] ?? ''));
+        require_once AI_SEO_PLUGIN_DIR . 'includes/class-license-manager.php';
+        $result = AI_SEO_License_Manager::activate($license_key);
+
+        if ($result['success']) {
+            wp_send_json_success($result);
+        } else {
+            wp_send_json_error($result);
+        }
+    }
+
+    /**
+     * Lisansı Kaldırma / Devre Dışı Bırakma
+     */
+    public function handle_deactivate_license() {
+        check_ajax_referer('ai_seo_settings_nonce', 'security');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => __('Yetkisiz işlem.', 'ai-content-seo-assistant')));
+        }
+
+        require_once AI_SEO_PLUGIN_DIR . 'includes/class-license-manager.php';
+        $result = AI_SEO_License_Manager::deactivate();
+
+        wp_send_json_success($result);
     }
 }
