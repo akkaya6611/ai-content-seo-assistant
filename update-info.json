@@ -1,7 +1,7 @@
 {
   "name": "AI Content & SEO Assistant",
   "slug": "ai-content-seo-assistant",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "<a href=\"https://misteknoloji360.com.tr/\">Serkan AKKAYA</a>",
   "homepage": "https://misteknoloji360.com.tr/",
   "download_url": "https://raw.githubusercontent.com/akkaya6611/ai-content-seo-assistant/main/ai-content-seo-assistant.zip",
@@ -11,6 +11,6 @@
   "last_updated": "2026-08-18",
   "sections": {
     "description": "Yapay zeka destekli otomatik içerik üretimi, günlük zamanlanmış makale yayınlayıcı (Cron), canlı SERP önizlemeli SEO meta etiketleri ve Schema.org JSON-LD yapısal veri motoru. Groq, Google Gemini, DeepSeek, OpenRouter, Claude ve OpenAI destekler.",
-    "changelog": "<h4>1.0.0</h4><ul><li>İlk resmi kararlı sürüm.</li><li>Çoklu AI Sağlayıcıları (Groq, Google Gemini, DeepSeek, OpenRouter, Claude, OpenAI, Custom).</li><li>Otomatik Pilot günlük makale üreticisi.</li><li>Merkezi otomatik güncelleme motoru.</li></ul>"
+    "changelog": "<h4>1.0.1 (Otomatik Güncelleme Testi)</h4><ul><li>🚀 Otomatik güncelleme motoru başarıyla test edildi.</li><li>⚡ Groq, Gemini ve OpenRouter bağlantıları optimize edildi.</li><li>👨‍💻 Geliştirici: Serkan AKKAYA (misteknoloji360.com.tr)</li></ul>"
   }
 }
