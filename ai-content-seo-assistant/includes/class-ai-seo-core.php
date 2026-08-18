@@ -49,7 +49,7 @@ class AI_SEO_Core {
      * Eklentiler Sayfasında "Ayarlar" Linki
      */
     public function add_action_links($links) {
-        $settings_link = '<a href="' . admin_url('options-general.php?page=ai-content-seo-assistant') . '">' . __('Ayarlar', 'ai-content-seo-assistant') . '</a>';
+        $settings_link = '<a href="' . admin_url('admin.php?page=ai-content-seo-assistant') . '">' . __('Ayarlar', 'ai-content-seo-assistant') . '</a>';
         array_unshift($links, $settings_link);
         return $links;
     }
@@ -59,7 +59,7 @@ class AI_SEO_Core {
      */
     public function enqueue_admin_assets($hook) {
         // 1. Ayarlar Sayfası Asset'leri
-        if ($hook === 'settings_page_ai-content-seo-assistant') {
+        if ($hook === 'toplevel_page_ai-content-seo-assistant' || strpos($hook, 'ai-content-seo-assistant') !== false) {
             wp_enqueue_style(
                 'ai-seo-admin-style',
                 AI_SEO_PLUGIN_URL . 'assets/css/admin-style.css',
