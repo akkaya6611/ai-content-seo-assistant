@@ -43,6 +43,59 @@ class AI_SEO_Core {
     private function init_hooks() {
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
         add_filter('plugin_action_links_' . AI_SEO_PLUGIN_BASENAME, array($this, 'add_action_links'));
+        add_action('init', array($this, 'handle_public_ping'));
+        add_action('rest_api_init', array($this, 'register_rest_routes'));
+    }
+
+    /**
+     * Canlı Lisans ve Sinyal Sorgulama Uç Noktası (Public Heartbeat Ping)
+     */
+    public function handle_public_ping() {
+        if (isset($_GET['ai_seo_ping']) && $_GET['ai_seo_ping'] == '1') {
+            header('Content-Type: application/json; charset=utf-8');
+            header('Access-Control-Allow-Origin: *');
+            $license_info = AI_SEO_License_Manager::get_license_info();
+            echo wp_json_encode(array(
+                'success'      => true,
+                'plugin'       => 'ai-content-seo-assistant',
+                'name'         => 'AI Content & SEO Assistant',
+                'version'      => AI_SEO_VERSION,
+                'is_licensed'  => $license_info['is_active'],
+                'license_key'  => $license_info['key'],
+                'domain'       => AI_SEO_License_Manager::get_current_domain(),
+                'wp_version'   => get_bloginfo('version'),
+                'php_version'  => phpversion(),
+                'server_time'  => current_time('mysql'),
+                'developer'    => 'Serkan AKKAYA (misteknoloji360.com.tr)',
+            ));
+            exit;
+        }
+    }
+
+    /**
+     * WP REST API Uç Noktası
+     */
+    public function register_rest_routes() {
+        register_rest_route('ai-seo/v1', '/ping', array(
+            'methods'             => 'GET',
+            'permission_callback' => '__return_true',
+            'callback'            => function() {
+                $license_info = AI_SEO_License_Manager::get_license_info();
+                return array(
+                    'success'      => true,
+                    'plugin'       => 'ai-content-seo-assistant',
+                    'name'         => 'AI Content & SEO Assistant',
+                    'version'      => AI_SEO_VERSION,
+                    'is_licensed'  => $license_info['is_active'],
+                    'license_key'  => $license_info['key'],
+                    'domain'       => AI_SEO_License_Manager::get_current_domain(),
+                    'wp_version'   => get_bloginfo('version'),
+                    'php_version'  => phpversion(),
+                    'server_time'  => current_time('mysql'),
+                    'developer'    => 'Serkan AKKAYA (misteknoloji360.com.tr)',
+                );
+            },
+        ));
     }
 
     /**
